@@ -19,6 +19,20 @@ const run = async () => {
         await client.connect();
         const toolCollection = client.db('sks-inc').collection('tools');
         const userCollection = client.db('sks-inc').collection('users');
+        const orderCollection = client.db('sks-inc').collection('orders');
+
+        //add orders to database
+        app.put('/order', async (req, res) => {
+            const order = req.body;
+            const { email, orderQty, toolName, date } = order;
+            const filter = { email, orderQty, toolName, date };
+            const option = { upsert: true };
+            const updatedOrder = {
+                $set: order
+            };
+            const result = await orderCollection.updateOne(filter, updatedOrder, option);
+            res.send(result);
+        });
 
         //load tools at most 6 item
         app.get('/tools', async (req, res) => {
@@ -47,7 +61,7 @@ const run = async () => {
             const result = await userCollection.updateOne(filter, updatedUser, option);
             const secretToken = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
             res.send({ result, secretToken });
-        })
+        });
 
     }
     finally {
