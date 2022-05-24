@@ -1,7 +1,7 @@
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 
 const app = express();
@@ -20,16 +20,25 @@ const run = async () => {
         const toolCollection = client.db('sks-inc').collection('tools');
         const userCollection = client.db('sks-inc').collection('users');
 
+        //load tools at most 6 item
         app.get('/tools', async (req, res) => {
             const tools = await toolCollection.find().limit(6).toArray();
             res.send(tools);
         });
 
+        //load tool by id
+        app.get('/tool/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const tool = await toolCollection.findOne(query);
+            res.send(tool);
+        })
+
         //create/update user or add user information to database
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
-            console.log(email, user)
+            // console.log(email, user)
             const filter = { email: email };
             const option = { upsert: true };
             const updatedUser = {
