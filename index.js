@@ -4,6 +4,13 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 
+const verifyToken = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    const secretToken = authHeader.split(' ')[1];
+    // console.log(secretToken)
+    next();
+}
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -33,6 +40,14 @@ const run = async () => {
             const result = await orderCollection.updateOne(filter, updatedOrder, option);
             res.send(result);
         });
+
+        //load order by email or my order API
+        app.get('/my-order/:email', verifyToken, async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const myOrder = await orderCollection.find(query).toArray();
+            res.send(myOrder);
+        })
 
         //load tools at most 6 item
         app.get('/tools', async (req, res) => {
