@@ -54,6 +54,12 @@ const run = async () => {
             });
         });
 
+        //Load reviews from database
+        app.get('/review', async (req, res) => {
+            const result = await reviewCollection.find().toArray();
+            res.send(result);
+        });
+
         //add review to database
         app.post('/review', async (req, res) => {
             const review = req.body;
@@ -118,7 +124,7 @@ const run = async () => {
             res.send(myOrder);
         })
 
-        //load tools at most 6 item
+        //load tools  item
         app.get('/tools', async (req, res) => {
             const tools = await toolCollection.find().toArray();
             res.send(tools);
