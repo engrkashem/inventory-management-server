@@ -7,10 +7,19 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const verifyToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).send({ message: 'Unauthorized Access' });
+    }
     const secretToken = authHeader.split(' ')[1];
-    // console.log(secretToken)
-    next();
-}
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+        if (err) {
+            return res.status(403).send({ message: 'Forbidden Access' });
+        }
+        req.decoded = decoded;
+        next(); //to go further / read rest code after calling function.
+    });
+};
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -66,7 +75,7 @@ const run = async () => {
 
         //load tools at most 6 item
         app.get('/tools', async (req, res) => {
-            const tools = await toolCollection.find().limit(6).toArray();
+            const tools = await toolCollection.find().toArray();
             res.send(tools);
         });
 
