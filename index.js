@@ -41,6 +41,18 @@ const run = async () => {
         const paymentCollection = client.db('sks-inc').collection('payments');
         const reviewCollection = client.db('sks-inc').collection('reviews');
 
+        //verify admin middletire
+        const verifyAdmin = async (req, res, next) => {
+            const requester = req.decoded.email;
+            const requesterInfo = await userCollection.findOne({ email: requester });
+            if (requesterInfo.role === 'admin') {
+                next();
+            }
+            else {
+                res.status(403).send({ message: 'Forbidden' });
+            }
+        }
+
         //Stripe payment intent APIs
         app.post('/create-payment-intent', verifyToken, async (req, res) => {
             const { price } = req.body;
@@ -169,22 +181,14 @@ const run = async () => {
         });
 
         //make a user admin
-        app.patch('/user/admin/:email', verifyToken, async (req, res) => {
+        app.patch('/user/admin/:email', verifyToken, verifyAdmin, async (req, res) => {
             const user = req.params.email;
-            const requester = req.decoded.email;
-            const requesterInfo = await userCollection.findOne({ email: requester });
-            if (requesterInfo.role === 'admin') {
-                const filter = { email: user };
-                const updatedDoc = {
-                    $set: { role: 'admin' }
-                };
-                const result = await userCollection.updateOne(filter, updatedDoc);
-                res.send(result);
-            }
-            else {
-                res.status(403).send({ message: 'Forbidden' });
-            }
-
+            const filter = { email: user };
+            const updatedDoc = {
+                $set: { role: 'admin' }
+            };
+            const result = await userCollection.updateOne(filter, updatedDoc);
+            res.send(result);
         });
 
         //Update user profile
