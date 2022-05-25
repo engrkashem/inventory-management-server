@@ -12,7 +12,7 @@ const verifyToken = async (req, res, next) => {
     }
     const secretToken = authHeader.split(' ')[1];
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    jwt.verify(secretToken, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
         if (err) {
             return res.status(403).send({ message: 'Forbidden Access' });
         }
