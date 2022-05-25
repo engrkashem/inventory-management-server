@@ -146,6 +146,14 @@ const run = async () => {
             res.send(result);
         });
 
+        //check admin to protect admin route
+        app.get('/admin/:email', verifyToken, async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email: email });
+            const isAdmin = user.role === 'admin';
+            res.send({ admin: isAdmin });
+        });
+
         //load user profile by email
         app.get('/user/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
@@ -163,12 +171,20 @@ const run = async () => {
         //make a user admin
         app.patch('/user/admin/:email', verifyToken, async (req, res) => {
             const user = req.params.email;
-            const filter = { email: user };
-            const updatedDoc = {
-                $set: { role: 'admin' }
-            };
-            const result = await userCollection.updateOne(filter, updatedDoc);
-            res.send(result);
+            const requester = req.decoded.email;
+            const requesterInfo = await userCollection.findOne({ email: requester });
+            if (requesterInfo.role === 'admin') {
+                const filter = { email: user };
+                const updatedDoc = {
+                    $set: { role: 'admin' }
+                };
+                const result = await userCollection.updateOne(filter, updatedDoc);
+                res.send(result);
+            }
+            else {
+                res.status(403).send({ message: 'Forbidden' });
+            }
+
         });
 
         //Update user profile
