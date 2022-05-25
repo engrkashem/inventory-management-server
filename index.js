@@ -37,6 +37,7 @@ const run = async () => {
         const toolCollection = client.db('sks-inc').collection('tools');
         const userCollection = client.db('sks-inc').collection('users');
         const orderCollection = client.db('sks-inc').collection('orders');
+        const paymentCollection = client.db('sks-inc').collection('payments');
 
         //Stripe payment intent APIs
         app.post('/create-payment-intent', verifyToken, async (req, res) => {
@@ -64,6 +65,34 @@ const run = async () => {
             const result = await orderCollection.updateOne(filter, updatedOrder, option);
             res.send(result);
         });
+
+        //update order and available stock also insert payment history
+        app.patch('/order/:id', verifyToken, async (req, res) => {
+            const orderID = req.params.id;
+            const { payment, myOrder } = req.body;
+            const orderFilter = { _id: ObjectId(orderID) };
+            const updatedOrder = {
+                $set: {
+                    paid: true,
+                    txId: payment.txId
+                }
+            };
+            const orderQty = myOrder.orderQty;
+            const stockQty = myOrder.stockQty;
+            const newQty = parseInt(stockQty) - parseInt(orderQty);
+            const toolID = myOrder.productId;
+            const toolFilter = { _id: ObjectId(toolID) };
+            const updatedToolInfo = {
+                $set: {
+                    quantity: newQty
+                }
+            };
+            const updatedTool = await toolCollection.updateOne(toolFilter, updatedToolInfo);
+            const paymentData = await paymentCollection.insertOne(payment);
+            const result = await orderCollection.updateOne(orderFilter, updatedOrder);
+            res.send(result);
+
+        })
 
         //load order by email or my order API
         app.get('/my-order/:email', verifyToken, async (req, res) => {
