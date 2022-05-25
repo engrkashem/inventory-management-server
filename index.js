@@ -191,6 +191,17 @@ const run = async () => {
             res.send(result);
         });
 
+        //remove admin
+        app.put('/user/admin/:email', verifyToken, verifyAdmin, async (req, res) => {
+            const user = req.params.email;
+            const filter = { email: user };
+            const updatedDoc = {
+                $set: { role: ' ' }
+            };
+            const result = await userCollection.updateOne(filter, updatedDoc);
+            res.send(result);
+        });
+
         //Update user profile
         app.patch('/user/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
