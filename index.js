@@ -138,6 +138,13 @@ const run = async () => {
             res.send(tool);
         });
 
+        //add a tool/product to database
+        app.post('/tool', verifyToken, async (req, res) => {
+            const tool = req.body;
+            const result = await toolCollection.insertOne(tool);
+            res.send(result);
+        });
+
         //load user profile by email
         app.get('/user/:email', async (req, res) => {
             const email = req.params.email;
