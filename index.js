@@ -136,6 +136,26 @@ const run = async () => {
             const query = { _id: ObjectId(id) };
             const tool = await toolCollection.findOne(query);
             res.send(tool);
+        });
+
+        //load user profile by email
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const result = await userCollection.findOne(query);
+            res.send(result);
+        });
+
+        //Update user profile
+        app.patch('/user/:email', verifyToken, async (req, res) => {
+            const email = req.params.email;
+            const userInfo = req.body;
+            const filter = { email: email };
+            const updatedDoc = {
+                $set: userInfo
+            };
+            const result = await userCollection.updateOne(filter, updatedDoc);
+            res.send(result);
         })
 
         //create/update user or add user information to database
