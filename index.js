@@ -3,6 +3,7 @@ require('dotenv').config();
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const verifyToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -27,6 +28,20 @@ const run = async () => {
         const toolCollection = client.db('sks-inc').collection('tools');
         const userCollection = client.db('sks-inc').collection('users');
         const orderCollection = client.db('sks-inc').collection('orders');
+
+        //Stripe payment intent APIs
+        app.post('/create-payment-intent', verifyToken, async (req, res) => {
+            const { price } = req.body;
+            const amount = parseFloat(price) * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ['card'],
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret
+            });
+        });
 
         //add orders to database
         app.put('/order', async (req, res) => {
