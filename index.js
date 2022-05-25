@@ -3,6 +3,7 @@ require('dotenv').config();
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
+const { use } = require('express/lib/application');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const verifyToken = async (req, res, next) => {
@@ -146,10 +147,27 @@ const run = async () => {
         });
 
         //load user profile by email
-        app.get('/user/:email', async (req, res) => {
+        app.get('/user/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
             const result = await userCollection.findOne(query);
+            res.send(result);
+        });
+
+        //load all user
+        app.get('/user', verifyToken, async (req, res) => {
+            const result = await userCollection.find().toArray();
+            res.send(result);
+        });
+
+        //make a user admin
+        app.patch('/user/admin/:email', verifyToken, async (req, res) => {
+            const user = req.params.email;
+            const filter = { email: user };
+            const updatedDoc = {
+                $set: { role: 'admin' }
+            };
+            const result = await userCollection.updateOne(filter, updatedDoc);
             res.send(result);
         });
 
