@@ -38,6 +38,7 @@ const run = async () => {
         const userCollection = client.db('sks-inc').collection('users');
         const orderCollection = client.db('sks-inc').collection('orders');
         const paymentCollection = client.db('sks-inc').collection('payments');
+        const reviewCollection = client.db('sks-inc').collection('reviews');
 
         //Stripe payment intent APIs
         app.post('/create-payment-intent', verifyToken, async (req, res) => {
@@ -52,6 +53,13 @@ const run = async () => {
                 clientSecret: paymentIntent.client_secret
             });
         });
+
+        //add review to database
+        app.post('/review', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result);
+        })
 
         //add orders to database
         app.put('/order', async (req, res) => {
