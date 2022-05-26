@@ -144,9 +144,9 @@ const run = async () => {
         });
 
         //update order to shipped by email
-        app.put('/order/:email', verifyToken, verifyAdmin, async (req, res) => {
-            const email = req.params.email;
-            const filter = { email: email };
+        app.put('/order/:id', verifyToken, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
             const updatedDoc = {
                 $set: { shipped: true }
             };
