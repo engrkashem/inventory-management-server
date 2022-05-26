@@ -122,12 +122,18 @@ const run = async () => {
         });
 
         //cancel or delete order
-        app.delete('/order/:id', async (req, res) => {
+        app.delete('/order/:id', verifyToken, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await orderCollection.deleteOne(query);
             res.send(result);
-        })
+        });
+
+        //Load all order from database
+        app.get('/order', verifyToken, verifyAdmin, async (req, res) => {
+            const orders = await orderCollection.find().toArray();
+            res.send(orders);
+        });
 
         //load order by email or my order API
         app.get('/my-order/:email', verifyToken, async (req, res) => {
@@ -135,7 +141,18 @@ const run = async () => {
             const query = { email };
             const myOrder = await orderCollection.find(query).toArray();
             res.send(myOrder);
-        })
+        });
+
+        //update order to shipped by email
+        app.put('/order/:email', verifyToken, verifyAdmin, async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const updatedDoc = {
+                $set: { shipped: true }
+            };
+            const result = await orderCollection.updateOne(filter, updatedDoc);
+            res.send(result);
+        });
 
         //load tools  item
         app.get('/tools', async (req, res) => {
