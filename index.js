@@ -175,6 +175,14 @@ const run = async () => {
             res.send(result);
         });
 
+        //Delete a tool or product
+        app.delete('/tool/:id', verifyToken, verifyAdmin, async (req, res) => {
+            const toolId = req.params.id;
+            const query = { _id: ObjectId(toolId) };
+            const result = await toolCollection.deleteOne(query);
+            res.send(result);
+        });
+
         //check admin to protect admin route
         app.get('/admin/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
