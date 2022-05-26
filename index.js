@@ -152,7 +152,7 @@ const run = async () => {
         });
 
         //add a tool/product to database
-        app.post('/tool', verifyToken, async (req, res) => {
+        app.post('/tool', verifyToken, verifyAdmin, async (req, res) => {
             const tool = req.body;
             const result = await toolCollection.insertOne(tool);
             res.send(result);
@@ -175,7 +175,7 @@ const run = async () => {
         });
 
         //load all user
-        app.get('/user', verifyToken, async (req, res) => {
+        app.get('/user', verifyToken, verifyAdmin, async (req, res) => {
             const result = await userCollection.find().toArray();
             res.send(result);
         });
