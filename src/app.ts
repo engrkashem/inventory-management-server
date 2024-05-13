@@ -1,15 +1,19 @@
 import cors from 'cors';
-import express from 'express';
+import express, { Application, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+import router from './app/routes';
+// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-const app = express();
+const app: Application = express();
 
-//parsers(middlewares)
+/*** parsers(middlewares) ***/
 app.use(express.json());
-app.use(cors({ origin: ['http://localhost:5173'], credentials: true }));
+app.use(cors({ origin: ['http://localhost:5173', '*'], credentials: true }));
 
-app.get('/', (req, res) => {
+/*** application routes ***/
+app.use('/api/v2', router);
+
+app.get('/', (req: Request, res: Response) => {
   res.send('Inventory Management Server is Running');
 });
 
@@ -48,13 +52,13 @@ const verifyAdmin = async (req, res, next) => {
 app.post('/create-payment-intent', verifyToken, async (req, res) => {
   const { price } = req.body;
   const amount = parseFloat(price) * 100;
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: amount,
-    currency: 'usd',
-    payment_method_types: ['card'],
-  });
+  // const paymentIntent = await stripe.paymentIntents.create({
+  //   amount: amount,
+  //   currency: 'usd',
+  //   payment_method_types: ['card'],
+  // });
   res.send({
-    clientSecret: paymentIntent.client_secret,
+    // clientSecret: paymentIntent.client_secret,
   });
 });
 
