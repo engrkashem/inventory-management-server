@@ -1,31 +1,20 @@
 /* eslint-disable no-console */
 import { Server } from 'http';
+import mongoose from 'mongoose';
 import app from './app';
-
-const port = process.env.PORT || 5000;
+import config from './app/config';
 
 let server: Server;
 
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uvrai.mongodb.net/?retryWrites=true&w=majority`;
-// const client = new MongoClient(uri, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-//   serverApi: ServerApiVersion.v1,
-// });
-
 const main = async () => {
   try {
-    // await client.connect();
-    // export const toolCollection = client.db('sks-inc').collection('tools');
-    // export const userCollection = client.db('sks-inc').collection('users');
-    // export const orderCollection = client.db('sks-inc').collection('orders');
-    // export const paymentCollection = client
-    //   .db('sks-inc')
-    //   .collection('payments');
-    // export const reviewCollection = client.db('sks-inc').collection('reviews');
+    await mongoose.connect(config.DB_URL);
 
-    server = app.listen(port, () => {
-      console.log('Inventory Management Server is Listening on port:', port);
+    server = app.listen(config.PORT, () => {
+      console.log(
+        'Inventory Management Server is Listening on port:',
+        config.PORT,
+      );
     });
   } catch (err) {
     console.log(err);
