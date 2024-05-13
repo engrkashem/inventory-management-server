@@ -52,7 +52,3 @@ process.on('uncaughtException', () => {
   console.log('uncaughtException occurred. Server is being shutting down..');
   process.exit(1);
 });
-
-/**
- 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
- */
