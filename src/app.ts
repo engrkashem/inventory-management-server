@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import router from './app/routes';
 // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -254,5 +255,10 @@ app.put('/user/:email', async (req, res) => {
   );
   res.send({ result, secretToken });
 });
+
+/*** Global error handling middleware ***/
+app.use(globalErrorHandler);
+
+/*** Not found route handling middleware ***/
 
 export default app;

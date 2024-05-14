@@ -1,17 +1,11 @@
 import catchAsyncRequest from '../../utils/catchAsyncRequest';
+import { UserServices } from './user.service';
 
 const createUser = catchAsyncRequest(async (req, res) => {
-  //   const { password, student: studentData } = req.body;
-
-  // calling service function to send data to database
-  //   const result = await UserServices.addStudentToDB(
-  //     req.file,
-  //     password,
-  //     studentData,
-  //   );
+  const result = await UserServices.createUserIntoDB(req.body);
 
   // sending response
-  res.json({ success: true });
+  res.json({ success: true, data: result });
 });
 
 export const UserControllers = {

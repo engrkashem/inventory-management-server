@@ -55,7 +55,6 @@ const userSchema = new Schema<TUser>(
         message:
           "'{VALUE}' is not supported. Gender can only be 'male', 'female' or 'other'",
       },
-      required: [true, 'Gender is required'],
     },
     address: { type: addressSchema },
     contactNo: { type: String, trim: true },
