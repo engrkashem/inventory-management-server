@@ -3,6 +3,6 @@ import { ReviewControllers } from './review.controller';
 
 const router = Router();
 
-router.post('/add-review/:id', ReviewControllers.addReview);
+router.post('/:userId', ReviewControllers.addReview);
 
 export const ReviewRoutes = router;
