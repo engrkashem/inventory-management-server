@@ -11,8 +11,8 @@ const addReview = catchAsyncRequest(async (req, res) => {
 
   const links = {
     self: `POST: ${reviewRootUrl}`,
-    allReview: `GET: ${reviewRootUrl}`,
-    myReviews: `GET: ${reviewRootUrl}/my-reviews`,
+    productReview: `GET: ${reviewRootUrl}/${result?.product}`,
+    userReviews: `GET: ${reviewRootUrl}`,
   };
 
   sendResponse(res, {

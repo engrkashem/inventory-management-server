@@ -19,6 +19,11 @@ const reviewSchema = new Schema<TReview>(
       required: [true, "User's id/reference id is required."],
       ref: 'User',
     },
+    product: {
+      type: Schema.Types.ObjectId,
+      required: [true, "Product's id/reference id is required."],
+      ref: 'Product',
+    },
     isDeleted: { type: Boolean, default: false },
   },
   {
