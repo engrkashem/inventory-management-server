@@ -74,6 +74,9 @@ const userSchema = new Schema<TUser>(
     timestamps: true,
     toJSON: {
       virtuals: true,
+      transform(doc, ret) {
+        delete ret.password;
+      },
     },
   },
 );

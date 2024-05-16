@@ -17,8 +17,6 @@ const createUserValidationSchema = z.object({
         message:
           'Password must be minimum six characters, at least one letter and one number',
       }),
-    // .min(3, { message: 'Password can not be less than 3 characters' })
-    // .max(20, { message: 'Password can not be more than 20 characters' }),
   }),
 });
 
