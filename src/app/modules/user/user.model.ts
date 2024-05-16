@@ -78,7 +78,7 @@ const userSchema = new Schema<TUser>(
   },
 );
 
-/*** Document Middleware ***/
+/*** Document Middlewares ***/
 //pre save middleware/hook to encrypt password
 userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias

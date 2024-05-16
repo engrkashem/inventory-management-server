@@ -2,7 +2,12 @@ import { z } from 'zod';
 
 const createUserValidationSchema = z.object({
   body: z.object({
-    email: z.string({ required_error: 'User Email is required.' }),
+    email: z.string({ required_error: 'User Email is required.' }).refine(
+      (data) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data),
+      (value) => ({
+        message: `${value} is not a valid email. Please enter a correct email`,
+      }),
+    ),
     password: z
       .string({
         invalid_type_error: 'Password must be string',
