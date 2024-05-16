@@ -101,6 +101,13 @@ userSchema.statics.isUserExistsByEmail = async function (email: string) {
   return await User.findOne({ email: email }).select('+password');
 };
 
+userSchema.statics.isPasswordMatched = async function (
+  password: string,
+  hashedPassword: string,
+) {
+  return await bcrypt.compare(password, hashedPassword);
+};
+
 /*** Virtual Field addition ***/
 userSchema.virtual('fullName').get(function () {
   return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`;
