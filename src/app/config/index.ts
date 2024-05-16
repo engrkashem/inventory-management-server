@@ -10,4 +10,5 @@ export default {
   PORT: process.env.PORT,
   DB_URL: process.env.DB_URL,
   BASE_URL: process.env.BASE_URL,
+  BCRYPT_SALT_ROUNDS: process.env.BCRYPT_SALT_ROUNDS,
 };

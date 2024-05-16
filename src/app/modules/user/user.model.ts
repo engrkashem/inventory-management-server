@@ -1,4 +1,6 @@
+import bcrypt from 'bcrypt';
 import { Schema, model } from 'mongoose';
+import config from '../../config';
 import { GENDER, ROLE } from './user.constants';
 import { TUser, TUserName } from './user.interface';
 
@@ -75,6 +77,21 @@ const userSchema = new Schema<TUser>(
     },
   },
 );
+
+/*** Document Middleware ***/
+//pre save middleware/hook to encrypt password
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+
+  // hash the password before passing to next
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.BCRYPT_SALT_ROUNDS),
+  );
+
+  next();
+});
 
 /*** Virtual Field addition ***/
 userSchema.virtual('fullName').get(function () {
