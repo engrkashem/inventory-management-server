@@ -26,4 +26,5 @@ export type TUser = {
   role: TRole;
   isDeleted: boolean;
   isGoogleAuthenticated: boolean;
+  isBlocked: true;
 };
