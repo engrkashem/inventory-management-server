@@ -65,6 +65,7 @@ const userSchema = new Schema<TUser>(
       default: 'user',
     },
     isDeleted: { type: Boolean, default: false },
+    isGoogleAuthenticated: { type: Boolean, default: false },
   },
   {
     timestamps: true,

@@ -25,4 +25,5 @@ export type TUser = {
   profilePic?: string;
   role: TRole;
   isDeleted: boolean;
+  isGoogleAuthenticated: boolean;
 };
