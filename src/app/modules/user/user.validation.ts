@@ -8,9 +8,12 @@ const createUserValidationSchema = z.object({
         invalid_type_error: 'Password must be string',
         required_error: 'Password is required',
       })
-      .trim()
-      .min(3, { message: 'Password can not be less than 3 characters' })
-      .max(20, { message: 'Password can not be more than 20 characters' }),
+      .refine((pass) => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(pass), {
+        message:
+          'Password must be minimum six characters, at least one letter and one number',
+      }),
+    // .min(3, { message: 'Password can not be less than 3 characters' })
+    // .max(20, { message: 'Password can not be more than 20 characters' }),
   }),
 });
 
