@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+import { Model } from 'mongoose';
+
 export type TUserName = {
   firstName: string;
   middleName?: string;
@@ -28,3 +31,7 @@ export type TUser = {
   isGoogleAuthenticated: boolean;
   isBlocked: true;
 };
+
+export interface UserModel extends Model<TUser> {
+  isUserExistsByEmail(email: string): Promise<TUser | null>;
+}

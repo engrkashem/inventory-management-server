@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { Schema, model } from 'mongoose';
 import config from '../../config';
 import { GENDER, ROLE } from './user.constants';
-import { TUser, TUserName } from './user.interface';
+import { TUser, TUserName, UserModel } from './user.interface';
 
 const userNameSchema = new Schema<TUserName>(
   {
@@ -40,7 +40,7 @@ const addressSchema = new Schema<TUserName>(
   },
 );
 
-const userSchema = new Schema<TUser>(
+const userSchema = new Schema<TUser, UserModel>(
   {
     name: { type: userNameSchema },
     email: {
@@ -49,7 +49,7 @@ const userSchema = new Schema<TUser>(
       trim: true,
       unique: true,
     },
-    password: { type: String, default: '' },
+    password: { type: String, default: '', select: false },
     gender: {
       type: String,
       enum: {
@@ -96,10 +96,15 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+/*** Custom static methods ***/
+userSchema.statics.isUserExistsByEmail = async function (email: string) {
+  return await User.findOne({ email: email }).select('+password');
+};
+
 /*** Virtual Field addition ***/
 userSchema.virtual('fullName').get(function () {
   return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`;
 });
 
-/*** model creation ***/
-export const User = model<TUser>('User', userSchema); // it will create a collection named users
+/*** Model creation ***/
+export const User = model<TUser, UserModel>('User', userSchema); // it will create a collection named users
