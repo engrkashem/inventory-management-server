@@ -11,13 +11,21 @@ const addReviewIntoDB = async (payload: TReview, userId: string) => {
   return result;
 };
 
-const getSingleProductReviewsFromDB = async (productId: string) => {
+const getSingleProductReviewsFromDB = async (
+  productId: string,
+  query: Record<string, unknown>,
+) => {
   // check if product exists or productId is valid
   const product = await Product.findById(productId);
 
   if (!product) {
     throw new AppError(httpStatus.NOT_FOUND.toFixed, 'Product is not found.');
   }
+
+  // pagination setup
+  const page = Number(query?.page) || 1;
+  const limit = Number(query?.limit) || 10;
+  const skip = (page - 1) * limit;
 
   const pipeline = [
     {
@@ -30,6 +38,7 @@ const getSingleProductReviewsFromDB = async (productId: string) => {
       $group: {
         _id: '$product',
         avgRating: { $avg: '$rating' },
+        totalCount: { $sum: 1 },
         reviews: { $push: '$$ROOT' },
       },
     },
@@ -45,18 +54,43 @@ const getSingleProductReviewsFromDB = async (productId: string) => {
       $unwind: '$productDetails', // Unwind the productDetails array to get a single document
     },
     {
-      $project: {
-        _id: 0,
-        product: '$productDetails',
-        avgRating: 1,
-        reviews: 1,
+      $facet: {
+        data: [
+          {
+            $project: {
+              _id: 0,
+              product: '$productDetails',
+              avgRating: 1,
+              totalCount: 1,
+              reviews: { $slice: ['$reviews', skip, limit] },
+            },
+          },
+        ],
       },
+    },
+    {
+      $unwind: '$data',
     },
   ];
 
-  const result = await Review.aggregate(pipeline);
+  const resultData = await Review.aggregate(pipeline);
 
-  return result;
+  const result = { ...resultData[0].data };
+
+  const total = result?.totalCount;
+  const totalPage = Math.ceil(total / limit);
+
+  delete result.totalCount;
+
+  return {
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPage,
+    },
+    data: result,
+  };
 };
 
 export const ReviewServices = {
