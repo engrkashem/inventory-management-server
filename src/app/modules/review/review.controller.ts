@@ -6,8 +6,9 @@ import { ReviewServices } from './review.service';
 const reviewRootUrl = `${config.BASE_URL}/reviews`;
 
 const addReview = catchAsyncRequest(async (req, res) => {
-  const userId = req.params.userId;
-  const result = await ReviewServices.addReviewIntoDB(req.body, userId);
+  const { _id } = req.user;
+
+  const result = await ReviewServices.addReviewIntoDB(req.body, _id);
 
   const links = {
     self: `POST: ${reviewRootUrl}`,

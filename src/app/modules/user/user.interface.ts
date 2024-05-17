@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import { Model } from 'mongoose';
+import { USER_ROLE } from './user.constants';
 
 export type TUserName = {
   firstName: string;
@@ -16,7 +17,7 @@ export type TAddress = {
   country: string;
 };
 
-export type TRole = 'superAdmin' | 'admin' | 'manager' | 'user';
+export type TRole = keyof typeof USER_ROLE;
 
 export type TUser = {
   name?: TUserName;
