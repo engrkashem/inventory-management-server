@@ -3,7 +3,7 @@ import config from '../../config';
 import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
 import { TJwtPayload, TLogin } from './auth.interface';
-import { createToken } from './auth.utils';
+import { createToken, verifyUser } from './auth.utils';
 
 const loginIntoDB = async (payload: TLogin) => {
   const { email, password } = payload;
@@ -15,15 +15,8 @@ const loginIntoDB = async (payload: TLogin) => {
     throw new AppError(404, 'User is not found. Register first.');
   }
 
-  // check if user deleted already
-  if (user?.isDeleted) {
-    throw new AppError(httpStatus.GONE, 'This User is deleted');
-  }
-
-  // check if user is blocked
-  if (user?.isBlocked) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'This User is blocked');
-  }
+  // check if user is blocked or deleted already
+  verifyUser(user);
 
   // check if user provided password matches with saved hashed password
   if (!(await User.isPasswordMatched(password, user?.password))) {

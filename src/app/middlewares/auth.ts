@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
 import AppError from '../errors/AppError';
-import { verifyToken } from '../modules/auth/auth.utils';
+import { verifyToken, verifyUser } from '../modules/auth/auth.utils';
 import { TRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
 import catchAsyncRequest from '../utils/catchAsyncRequest';
@@ -36,15 +36,8 @@ const auth = (...requiredRoles: TRole[]) => {
         throw new AppError(httpStatus.NOT_FOUND, 'This user is not found.');
       }
 
-      // check if user deleted already
-      if (user?.isDeleted) {
-        throw new AppError(httpStatus.GONE, 'This User is deleted');
-      }
-
-      // check if user is blocked
-      if (user?.isBlocked) {
-        throw new AppError(httpStatus.UNAUTHORIZED, 'This User is blocked');
-      }
+      // check if user is blocked or deleted already
+      verifyUser(user);
 
       // check if the user is authorized for this task/operation
       if (requiredRoles && !requiredRoles.includes(role)) {
