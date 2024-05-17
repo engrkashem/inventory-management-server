@@ -1,8 +1,8 @@
 import { Schema, model } from 'mongoose';
-import { TProduct } from './product.interface';
+import { ProductModel, TProduct } from './product.interface';
 
 /*** Product Schema ***/
-const productSchema = new Schema<TProduct>({
+const productSchema = new Schema<TProduct, ProductModel>({
   name: {
     type: String,
     required: [true, 'Your product name is required.'],
@@ -25,5 +25,10 @@ const productSchema = new Schema<TProduct>({
   isDeleted: { type: Boolean, default: false },
 });
 
+/*** Custom static methods ***/
+productSchema.statics.isProductExists = async function (id: string) {
+  return await Product.findById(id);
+};
+
 /*** Product Model ***/
-export const Product = model<TProduct>('Product', productSchema);
+export const Product = model<TProduct, ProductModel>('Product', productSchema);
