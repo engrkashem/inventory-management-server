@@ -6,9 +6,11 @@ import { ReviewControllers } from './review.controller';
 const router = Router();
 
 router.post(
-  '/:userId',
+  '/',
   auth(USER_ROLE.superAdmin, USER_ROLE.user),
   ReviewControllers.addReview,
 );
+
+router.get('/:productId', ReviewControllers.getSingleProductReviews);
 
 export const ReviewRoutes = router;

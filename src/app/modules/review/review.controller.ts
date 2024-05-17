@@ -25,6 +25,13 @@ const addReview = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const getSingleProductReviews = catchAsyncRequest(async (req, res) => {
+  const { productId } = req.params;
+  const result = await ReviewServices.getSingleProductReviewsFromDB(productId);
+  res.json({ result });
+});
+
 export const ReviewControllers = {
   addReview,
+  getSingleProductReviews,
 };
