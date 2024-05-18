@@ -28,13 +28,25 @@ const getAllProducts = catchAsyncRequest(async (req, res) => {
     req.query,
   );
 
+  const links = {
+    self: `GET: ${config.BASE_URL}/products?page=${pagination?.page}&limit=${pagination?.limit}`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${config.BASE_URL}/products?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${config.BASE_URL}/products?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
   sendResponse(res, {
     status: httpStatus.OK,
     success: true,
     message: 'Products are retrieved successfully',
     data,
     pagination,
-    links: {},
+    links,
   });
 });
 

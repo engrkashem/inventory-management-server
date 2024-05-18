@@ -1,5 +1,7 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
+import QueryBuilder from '../../queryBuilder/QueryBuilder';
+import { productSearchableFields } from './product.constants';
 import { TProduct } from './product.interface';
 import { Product } from './product.model';
 
@@ -19,8 +21,21 @@ const addProductIntoDB = async (payload: TProduct) => {
   return result;
 };
 
-const getAllProductsFromDB = async () => {
-  return {};
+const getAllProductsFromDB = async (query: Record<string, unknown>) => {
+  const productQuery = new QueryBuilder<TProduct>(Product.find(), query)
+    .search(productSearchableFields)
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await productQuery.modelQuery;
+  const pagination = await productQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
 };
 
 const getProductFromDB = async (productId: string) => {

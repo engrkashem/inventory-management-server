@@ -37,11 +37,11 @@ const getSingleProductReviews = catchAsyncRequest(async (req, res) => {
     prevPage:
       pagination?.page <= 1
         ? null
-        : `GET: ${config.BASE_URL}/reviews/${data?.product?._id}/page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+        : `GET: ${config.BASE_URL}/reviews/${data?.product?._id}?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
     nextPage:
       pagination?.page >= pagination?.totalPage
         ? null
-        : `GET: ${config.BASE_URL}/reviews/${data?.product?._id}/page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+        : `GET: ${config.BASE_URL}/reviews/${data?.product?._id}?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
     product: `GET: ${config.BASE_URL}/products/${data?.product?._id}`,
     allProducts: `GET: ${config.BASE_URL}/products`,
   };
