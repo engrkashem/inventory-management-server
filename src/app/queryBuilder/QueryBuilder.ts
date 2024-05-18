@@ -37,10 +37,26 @@ class QueryBuilder<T> {
       'limit',
       'page',
       'fields',
+      'minPrice',
+      'maxPrice',
     ];
 
     // remove  fields from query object that matches excludeFieldsFromQuery
     excludeFieldsFromQuery.forEach((item) => delete queryObj[item]);
+
+    // Handle price range filtering
+    const priceQuery: Record<string, unknown> = {};
+
+    if (this.query?.minPrice) {
+      priceQuery.$gte = Number(this.query.minPrice);
+    }
+    if (this.query?.maxPrice) {
+      priceQuery.$lte = Number(this.query.maxPrice);
+    }
+
+    if (Object.keys(priceQuery).length > 0) {
+      queryObj['price'] = priceQuery;
+    }
 
     // send filter query
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
