@@ -39,6 +39,7 @@ const getAllProductsFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getProductFromDB = async (productId: string) => {
+  // check if product exists
   const product = await Product.findById(productId);
 
   if (!product) {
@@ -51,6 +52,7 @@ const updateProductIntoDB = async (
   productId: string,
   payload: Partial<TProduct>,
 ) => {
+  // check if product exists
   const product = await Product.findById(productId);
 
   if (!product) {
@@ -66,7 +68,26 @@ const updateProductIntoDB = async (
 };
 
 const deleteProductFromDB = async (productId: string) => {
-  return { productId };
+  // check if product exists
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product is not found');
+  }
+
+  await Product.findByIdAndUpdate(
+    productId,
+    { isDeleted: true },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+
+  return {
+    deletedCount: 1,
+    modifiedCount: 1,
+  };
 };
 
 export const ProductServices = {

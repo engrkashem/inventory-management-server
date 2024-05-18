@@ -79,7 +79,7 @@ const updateProduct = catchAsyncRequest(async (req, res) => {
 
   const links = {
     self: `PATCH: ${productRootUrl}/${result?._id}`,
-    getAllProducts: `GET: ${productRootUrl}/${result?._id}`,
+    getProduct: `GET: ${productRootUrl}/${result?._id}`,
     deleteProduct: `DELETE: ${productRootUrl}/${result?._id}`,
   };
   sendResponse(res, {
@@ -92,13 +92,19 @@ const updateProduct = catchAsyncRequest(async (req, res) => {
 });
 
 const deleteProduct = catchAsyncRequest(async (req, res) => {
+  const { productId } = req.params;
+
+  const result = await ProductServices.deleteProductFromDB(productId);
+
+  const links = {
+    getAllProducts: `GET: ${productRootUrl}`,
+  };
   sendResponse(res, {
     status: httpStatus.OK,
     success: true,
     message: 'Product is deleted successfully',
-    data: {},
-    pagination: {},
-    links: {},
+    data: result,
+    links,
   });
 });
 
