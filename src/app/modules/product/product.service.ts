@@ -39,11 +39,30 @@ const getAllProductsFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getProductFromDB = async (productId: string) => {
-  return { productId };
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product is not found');
+  }
+  return product;
 };
 
-const updateProductIntoDB = async (productId: string) => {
-  return { productId };
+const updateProductIntoDB = async (
+  productId: string,
+  payload: Partial<TProduct>,
+) => {
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product is not found');
+  }
+
+  const result = await Product.findByIdAndUpdate(productId, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
 };
 
 const deleteProductFromDB = async (productId: string) => {

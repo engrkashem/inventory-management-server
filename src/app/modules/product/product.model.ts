@@ -25,6 +25,19 @@ const productSchema = new Schema<TProduct, ProductModel>({
   isDeleted: { type: Boolean, default: false },
 });
 
+/*** Query Middlewares ***/
+// pre find middlewares/hooks
+productSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } }); // this means current user requested query (In this case, find)
+
+  next();
+});
+productSchema.pre('findOne', function (next) {
+  this.findOne({ isDeleted: false });
+
+  next();
+});
+
 /*** Custom static methods ***/
 productSchema.statics.isProductExists = async function (id: string) {
   return await Product.findById(id);
