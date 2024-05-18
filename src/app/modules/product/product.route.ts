@@ -19,13 +19,13 @@ router.get('/', ProductControllers.getAllProducts);
 router.get('/:productId', ProductControllers.getProduct);
 
 router.patch(
-  '/"productId',
+  '/:productId',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
   ProductControllers.updateProduct,
 );
 
 router.delete(
-  '/"productId',
+  '/:productId',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
   ProductControllers.deleteProduct,
 );

@@ -12,6 +12,8 @@ const addProduct = catchAsyncRequest(async (req, res) => {
   const links = {
     self: `POST: ${productRootUrl}`,
     product: `GET: ${productRootUrl}/${result?._id}`,
+    updateProduct: `PATCH: ${productRootUrl}/${result?._id}`,
+    deleteProduct: `DELETE: ${productRootUrl}/${result?._id}`,
   };
 
   sendResponse(res, {
