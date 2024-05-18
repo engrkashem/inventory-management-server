@@ -30,7 +30,7 @@ export type TUser = {
   role: TRole;
   isDeleted: boolean;
   isGoogleAuthenticated: boolean;
-  isBlocked: true;
+  isBlocked: boolean;
 };
 
 export interface UserModel extends Model<TUser> {

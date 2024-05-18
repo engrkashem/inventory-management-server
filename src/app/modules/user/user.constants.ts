@@ -1,6 +1,14 @@
-export const GENDER = ['male', 'female', 'other'];
+import { TGender, TRole } from './user.interface';
 
-export const ROLE = ['superAdmin', 'admin', 'manager', 'user', 'employee'];
+export const GENDER: TGender[] = ['male', 'female', 'other'];
+
+export const ROLE: TRole[] = [
+  'superAdmin',
+  'admin',
+  'manager',
+  'user',
+  'employee',
+];
 
 export const USER_ROLE = {
   user: 'user',

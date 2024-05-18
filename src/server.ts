@@ -2,6 +2,7 @@
 import { Server } from 'http';
 import mongoose from 'mongoose';
 import app from './app';
+import seedSuperAdmin from './app/DB';
 import config from './app/config';
 
 let server: Server;
@@ -9,6 +10,9 @@ let server: Server;
 const main = async () => {
   try {
     await mongoose.connect(config.DB_URL);
+
+    // seed super admin
+    seedSuperAdmin();
 
     server = app.listen(config.PORT, () => {
       console.log(
