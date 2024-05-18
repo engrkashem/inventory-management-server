@@ -20,6 +20,7 @@ router.get('/:productId', ProductControllers.getProduct);
 
 router.patch(
   '/:productId',
+  validateRequest(ProductValidations.updateProductValidationSchema),
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
   ProductControllers.updateProduct,
 );
