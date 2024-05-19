@@ -3,7 +3,7 @@ import config from '../../config';
 import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
 import { TJwtPayload, TLogin } from './auth.interface';
-import { createToken, verifyUser } from './auth.utils';
+import { createToken, verifyToken, verifyUser } from './auth.utils';
 
 const loginIntoDB = async (payload: TLogin) => {
   const { email, password } = payload;
@@ -52,6 +52,39 @@ const loginIntoDB = async (payload: TLogin) => {
   };
 };
 
+const createTokenFromRefreshToken = async (token: string) => {
+  const decodedUser = verifyToken(token, config.REFRESH_TOKEN_SECRET as string);
+
+  const { _id } = decodedUser;
+
+  // check if user exists
+  const user = await User.isUserExists(_id);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found.');
+  }
+
+  // check if user deleted already or blocked
+  verifyUser(user);
+
+  // Now generate new access Token
+  const jwtPayload: TJwtPayload = {
+    email: user?.email,
+    _id: user?._id,
+    role: user?.role,
+  };
+
+  const accessSecret = config.ACCESS_TOKEN_SECRET as string;
+  const accessTokenExpiry = config.JWT_ACCESS_EXPIRES_IN as string;
+
+  const accessToken = createToken(jwtPayload, accessSecret, accessTokenExpiry);
+
+  return {
+    accessToken,
+  };
+};
+
 export const AuthServices = {
   loginIntoDB,
+  createTokenFromRefreshToken,
 };

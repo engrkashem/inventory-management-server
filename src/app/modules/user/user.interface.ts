@@ -35,5 +35,6 @@ export type TUser = {
 
 export interface UserModel extends Model<TUser> {
   isUserExistsByEmail(email: string): Promise<TUser | null>;
+  isUserExists(id: string): Promise<TUser | null>;
   isPasswordMatched(password: string, hashedPassword: string): Promise<boolean>;
 }
