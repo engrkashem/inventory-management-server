@@ -8,3 +8,5 @@ export type TJwtPayload = {
   _id: string;
   role: string;
 };
+
+export type TChangePassword = { oldPassword: string; newPassword: string };
