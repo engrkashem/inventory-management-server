@@ -16,7 +16,7 @@ const addToCartIntoDB = async (payload: TOrder) => {
   // check if product exists
   const product = await Product.isProductExists(payload.product);
 
-  if (!product) {
+  if (!product || product.isDeleted) {
     throw new AppError(httpStatus.NOT_FOUND, 'This product is not found');
   }
 

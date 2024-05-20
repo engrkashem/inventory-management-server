@@ -2,28 +2,36 @@ import { Schema, model } from 'mongoose';
 import { ProductModel, TProduct } from './product.interface';
 
 /*** Product Schema ***/
-const productSchema = new Schema<TProduct, ProductModel>({
-  name: {
-    type: String,
-    required: [true, 'Your product name is required.'],
-    trim: true,
-    unique: true,
+const productSchema = new Schema<TProduct, ProductModel>(
+  {
+    name: {
+      type: String,
+      required: [true, 'Your product name is required.'],
+      trim: true,
+      unique: true,
+    },
+    qty: {
+      type: Number,
+      required: [true, 'Product stock quantity is required'],
+    },
+    price: { type: Number, required: [true, 'Product price is required'] },
+    img: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/djn7wzals/image/upload/v1703391369/cld-sample.jpg',
+    },
+    description: {
+      type: String,
+      required: [true, 'Your product description is required.'],
+      trim: true,
+    },
+    manufacturer: { type: String, default: '' },
+    isDeleted: { type: Boolean, default: false },
   },
-  qty: { type: Number, required: [true, 'Product stock quantity is required'] },
-  price: { type: Number, required: [true, 'Product price is required'] },
-  img: {
-    type: String,
-    default:
-      'https://res.cloudinary.com/djn7wzals/image/upload/v1703391369/cld-sample.jpg',
+  {
+    timestamps: true,
   },
-  description: {
-    type: String,
-    required: [true, 'Your product description is required.'],
-    trim: true,
-  },
-  manufacturer: { type: String, default: '' },
-  isDeleted: { type: Boolean, default: false },
-});
+);
 
 /*** Query Middlewares ***/
 // pre find middlewares/hooks
