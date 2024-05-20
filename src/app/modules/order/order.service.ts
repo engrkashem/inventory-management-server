@@ -175,10 +175,29 @@ const getMyCompletedOrdersFromDB = async (
   };
 };
 
+const getAllOrdersFromDB = async (query: Record<string, unknown>) => {
+  // Get all orders from user cart
+  const ordersQuery = new QueryBuilder<TOrder>(Order.find(), query)
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await ordersQuery.modelQuery;
+  const pagination = await ordersQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
 export const OrderServices = {
   addToCartIntoDB,
   updateProductQtyIntoDB,
   getMyOrderCartFromDB,
   getMyCurrentOrdersFromDB,
   getMyCompletedOrdersFromDB,
+  getAllOrdersFromDB,
 };

@@ -33,6 +33,7 @@ router.patch(
   OrderControllers.updateProductQty,
 );
 
+// endpoints to get orders of different state by related user
 router.get(
   '/my-cart',
   auth(
@@ -42,7 +43,6 @@ router.get(
     USER_ROLE.employee,
     USER_ROLE.user,
   ),
-
   OrderControllers.getMyOrderCart,
 );
 
@@ -55,7 +55,6 @@ router.get(
     USER_ROLE.employee,
     USER_ROLE.user,
   ),
-
   OrderControllers.getMyCurrentOrders,
 );
 
@@ -68,8 +67,14 @@ router.get(
     USER_ROLE.employee,
     USER_ROLE.user,
   ),
-
   OrderControllers.getMyCurrentOrders,
+);
+
+// endpoints to get orders of diff state bt admin/officials
+router.get(
+  '/',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  OrderControllers.getAllOrders,
 );
 
 export const OrderRoutes = router;

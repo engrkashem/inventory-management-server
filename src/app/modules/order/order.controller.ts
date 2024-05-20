@@ -142,10 +142,38 @@ const getMyCompletedOrders = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const getAllOrders = catchAsyncRequest(async (req, res) => {
+  const { data, pagination } = await OrderServices.getAllOrdersFromDB(
+    req.query,
+  );
+
+  const links = {
+    self: `GET: ${orderRootUrl}`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${orderRootUrl}?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${orderRootUrl}?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'All Orders retrieved successfully',
+    data,
+    pagination,
+    links,
+  });
+});
+
 export const OrderControllers = {
   addToCart,
   updateProductQty,
   getMyOrderCart,
   getMyCurrentOrders,
   getMyCompletedOrders,
+  getAllOrders,
 };
