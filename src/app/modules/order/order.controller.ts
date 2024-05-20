@@ -169,6 +169,114 @@ const getAllOrders = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const getAllPlacedOrders = catchAsyncRequest(async (req, res) => {
+  const { data, pagination } = await OrderServices.getAllPlacedOrdersFromDB(
+    req.query,
+  );
+
+  const links = {
+    self: `GET: ${orderRootUrl}`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${orderRootUrl}/placed-orders?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${orderRootUrl}/placed-orders?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'All placed Orders retrieved successfully',
+    data,
+    pagination,
+    links,
+  });
+});
+
+const getAllRunningOrders = catchAsyncRequest(async (req, res) => {
+  const { data, pagination } = await OrderServices.getAllRunningOrdersFromDB(
+    req.query,
+  );
+
+  const links = {
+    self: `GET: ${orderRootUrl}`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${orderRootUrl}/running-orders?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${orderRootUrl}/running-orders?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'All Running Orders retrieved successfully',
+    data,
+    pagination,
+    links,
+  });
+});
+
+const getAllCompletedOrders = catchAsyncRequest(async (req, res) => {
+  const { data, pagination } = await OrderServices.getAllCompletedOrdersFromDB(
+    req.query,
+  );
+
+  const links = {
+    self: `GET: ${orderRootUrl}`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${orderRootUrl}/completed-orders?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${orderRootUrl}/completed-orders?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'All completed Orders retrieved successfully',
+    data,
+    pagination,
+    links,
+  });
+});
+
+const getAllCancelledOrders = catchAsyncRequest(async (req, res) => {
+  const { data, pagination } = await OrderServices.getAllCancelledOrdersFromDB(
+    req.query,
+  );
+
+  const links = {
+    self: `GET: ${orderRootUrl}`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${orderRootUrl}/cancelled-orders?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${orderRootUrl}/cancelled-orders?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'All cancelled Orders retrieved successfully',
+    data,
+    pagination,
+    links,
+  });
+});
+
 export const OrderControllers = {
   addToCart,
   updateProductQty,
@@ -176,4 +284,8 @@ export const OrderControllers = {
   getMyCurrentOrders,
   getMyCompletedOrders,
   getAllOrders,
+  getAllPlacedOrders,
+  getAllRunningOrders,
+  getAllCompletedOrders,
+  getAllCancelledOrders,
 };

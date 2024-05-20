@@ -193,6 +193,90 @@ const getAllOrdersFromDB = async (query: Record<string, unknown>) => {
   };
 };
 
+const getAllPlacedOrdersFromDB = async (query: Record<string, unknown>) => {
+  // Get all orders from user cart
+  const ordersQuery = new QueryBuilder<TOrder>(
+    Order.find({ isPaymentOk: false, isCancelled: false }),
+    query,
+  )
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await ordersQuery.modelQuery;
+  const pagination = await ordersQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
+const getAllRunningOrdersFromDB = async (query: Record<string, unknown>) => {
+  // Get all orders from user cart
+  const ordersQuery = new QueryBuilder<TOrder>(
+    Order.find({ isPaymentOk: true, isDelivered: false, isCancelled: false }),
+    query,
+  )
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await ordersQuery.modelQuery;
+  const pagination = await ordersQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
+const getAllCompletedOrdersFromDB = async (query: Record<string, unknown>) => {
+  // Get all orders from user cart
+  const ordersQuery = new QueryBuilder<TOrder>(
+    Order.find({ isPaymentOk: true, isDelivered: true, isCancelled: false }),
+    query,
+  )
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await ordersQuery.modelQuery;
+  const pagination = await ordersQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
+const getAllCancelledOrdersFromDB = async (query: Record<string, unknown>) => {
+  // Get all orders from user cart
+  const ordersQuery = new QueryBuilder<TOrder>(
+    Order.find({ isCancelled: false }),
+    query,
+  )
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await ordersQuery.modelQuery;
+  const pagination = await ordersQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
 export const OrderServices = {
   addToCartIntoDB,
   updateProductQtyIntoDB,
@@ -200,4 +284,8 @@ export const OrderServices = {
   getMyCurrentOrdersFromDB,
   getMyCompletedOrdersFromDB,
   getAllOrdersFromDB,
+  getAllPlacedOrdersFromDB,
+  getAllRunningOrdersFromDB,
+  getAllCompletedOrdersFromDB,
+  getAllCancelledOrdersFromDB,
 };

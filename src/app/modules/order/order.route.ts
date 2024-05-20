@@ -77,4 +77,28 @@ router.get(
   OrderControllers.getAllOrders,
 );
 
+router.get(
+  '/placed-orders',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  OrderControllers.getAllPlacedOrders,
+);
+
+router.get(
+  '/running-orders',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  OrderControllers.getAllRunningOrders,
+);
+
+router.get(
+  '/completed-orders',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  OrderControllers.getAllCompletedOrders,
+);
+
+router.get(
+  '/cancelled-orders',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  OrderControllers.getAllCancelledOrders,
+);
+
 export const OrderRoutes = router;
