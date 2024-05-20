@@ -103,8 +103,44 @@ const getMyOrderCartFromDB = async (
   };
 };
 
+const getMyCurrentOrdersFromDB = async (
+  userId: string,
+  query: Record<string, unknown>,
+) => {
+  // check if user exists
+  const user = await User.isUserExists(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+
+  // Get all orders from user cart
+  const userCartQuery = new QueryBuilder<TOrder>(
+    Order.find({
+      buyer: user?._id,
+      isPaymentOk: true,
+      isDelivered: false,
+    }),
+    query,
+  )
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await userCartQuery.modelQuery;
+  const pagination = await userCartQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
 export const OrderServices = {
   addToCartIntoDB,
   updateProductQtyIntoDB,
   getMyOrderCartFromDB,
+  getMyCurrentOrdersFromDB,
 };

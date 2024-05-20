@@ -39,5 +39,18 @@ const orderSchema = new Schema<TOrder, OrderModel>(
   },
 );
 
+/*** Query Middlewares ***/
+// pre find middlewares/hooks
+orderSchema.pre('find', function (next) {
+  this.find({ isCancelled: { $ne: true } }); // this means current user requested query (In this case, find)
+
+  next();
+});
+orderSchema.pre('findOne', function (next) {
+  this.findOne({ isCancelled: false });
+
+  next();
+});
+
 /*** Order Model ***/
 export const Order = model<TOrder, OrderModel>('Order', orderSchema);
