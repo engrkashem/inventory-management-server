@@ -22,6 +22,20 @@ const addOrderValidationSchema = z.object({
   }),
 });
 
+const updateOrderQtyValidationSchema = z.object({
+  body: z.object({
+    orderQty: z
+      .number({
+        required_error: 'Order quantity is required',
+        invalid_type_error: 'Order quantity must be number',
+      })
+      .refine((qty) => qty >= 0, {
+        message: 'Order quantity can not be negative',
+      }),
+  }),
+});
+
 export const OrderValidations = {
   addOrderValidationSchema,
+  updateOrderQtyValidationSchema,
 };

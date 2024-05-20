@@ -26,6 +26,33 @@ const addToCart = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const updateProductQty = catchAsyncRequest(async (req, res) => {
+  const { _id: userId } = req.user;
+  const { orderId } = req.params;
+  const result = await OrderServices.updateProductQtyIntoDB(
+    orderId,
+    userId,
+    req.body,
+  );
+
+  const links = {
+    self: `PATCH: ${orderRootUrl}/${result?._id}/update-qty`,
+    order: `GET: ${orderRootUrl}/${result?._id}`,
+    product: `GET: ${config.BASE_URL}/products/${result?.product}`,
+    reviews: `GET: ${config.BASE_URL}/reviews/${result?.product}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Order quantity is updated successfully',
+    data: result,
+    pagination: {},
+    links,
+  });
+});
+
 export const OrderControllers = {
   addToCart,
+  updateProductQty,
 };

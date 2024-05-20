@@ -20,4 +20,17 @@ router.post(
   OrderControllers.addToCart,
 );
 
+router.patch(
+  '/:orderId/update-qty',
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.manager,
+    USER_ROLE.employee,
+    USER_ROLE.user,
+  ),
+  validateRequest(OrderValidations.updateOrderQtyValidationSchema),
+  OrderControllers.updateProductQty,
+);
+
 export const OrderRoutes = router;

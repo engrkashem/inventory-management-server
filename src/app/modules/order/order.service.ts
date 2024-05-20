@@ -47,6 +47,31 @@ const addToCartIntoDB = async (payload: TOrder) => {
   return result;
 };
 
+const updateProductQtyIntoDB = async (
+  orderId: string,
+  userId: string,
+  payload: { quantity: number },
+) => {
+  // check if order exists into cart
+  const order = await Order.findOne({
+    _id: orderId,
+    buyer: userId,
+    isPaymentOk: false,
+  });
+
+  if (!order) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Order is nor found in your cart');
+  }
+
+  const result = await Order.findByIdAndUpdate(orderId, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+};
+
 export const OrderServices = {
   addToCartIntoDB,
+  updateProductQtyIntoDB,
 };
