@@ -55,7 +55,7 @@ const updateProductQty = catchAsyncRequest(async (req, res) => {
 const getMyOrderCart = catchAsyncRequest(async (req, res) => {
   const { _id: userId } = req.user;
 
-  const { result, pagination } = await OrderServices.getMyOrderCartFromDB(
+  const { data, pagination } = await OrderServices.getMyOrderCartFromDB(
     userId,
     req.query,
   );
@@ -69,14 +69,74 @@ const getMyOrderCart = catchAsyncRequest(async (req, res) => {
     nextPage:
       pagination?.page >= pagination?.totalPage
         ? null
-        : `GET: ${orderRootUrl}/my-cart??page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+        : `GET: ${orderRootUrl}/my-cart?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
   };
 
   sendResponse(res, {
     status: httpStatus.OK,
     success: true,
     message: "User's cart retrieved successfully",
-    data: result,
+    data,
+    pagination,
+    links,
+  });
+});
+
+const getMyCurrentOrders = catchAsyncRequest(async (req, res) => {
+  const { _id: userId } = req.user;
+
+  const { data, pagination } = await OrderServices.getMyCurrentOrdersFromDB(
+    userId,
+    req.query,
+  );
+
+  const links = {
+    self: `GET: ${orderRootUrl}/my-current-orders`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${orderRootUrl}/my-current-orders?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${orderRootUrl}/my-current-orders?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: "User's Current/running Orders retrieved successfully",
+    data,
+    pagination,
+    links,
+  });
+});
+
+const getMyCompletedOrders = catchAsyncRequest(async (req, res) => {
+  const { _id: userId } = req.user;
+
+  const { data, pagination } = await OrderServices.getMyCompletedOrdersFromDB(
+    userId,
+    req.query,
+  );
+
+  const links = {
+    self: `GET: ${orderRootUrl}/my-completed-orders`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${orderRootUrl}/my-completed-orders?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${orderRootUrl}/my-completed-orders?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: "User's completed Orders retrieved successfully",
+    data,
     pagination,
     links,
   });
@@ -86,4 +146,6 @@ export const OrderControllers = {
   addToCart,
   updateProductQty,
   getMyOrderCart,
+  getMyCurrentOrders,
+  getMyCompletedOrders,
 };

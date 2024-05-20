@@ -46,4 +46,30 @@ router.get(
   OrderControllers.getMyOrderCart,
 );
 
+router.get(
+  '/my-current-orders',
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.manager,
+    USER_ROLE.employee,
+    USER_ROLE.user,
+  ),
+
+  OrderControllers.getMyCurrentOrders,
+);
+
+router.get(
+  '/my-completed-orders',
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.manager,
+    USER_ROLE.employee,
+    USER_ROLE.user,
+  ),
+
+  OrderControllers.getMyCurrentOrders,
+);
+
 export const OrderRoutes = router;

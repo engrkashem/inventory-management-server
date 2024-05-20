@@ -115,7 +115,7 @@ const getMyCurrentOrdersFromDB = async (
   }
 
   // Get all orders from user cart
-  const userCartQuery = new QueryBuilder<TOrder>(
+  const userOrdersQuery = new QueryBuilder<TOrder>(
     Order.find({
       buyer: user?._id,
       isPaymentOk: true,
@@ -129,8 +129,43 @@ const getMyCurrentOrdersFromDB = async (
     .pagination()
     .fields();
 
-  const result = await userCartQuery.modelQuery;
-  const pagination = await userCartQuery.countTotal();
+  const result = await userOrdersQuery.modelQuery;
+  const pagination = await userOrdersQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
+const getMyCompletedOrdersFromDB = async (
+  userId: string,
+  query: Record<string, unknown>,
+) => {
+  // check if user exists
+  const user = await User.isUserExists(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+
+  // Get all orders from user cart
+  const userCompletedOrdersQuery = new QueryBuilder<TOrder>(
+    Order.find({
+      buyer: user?._id,
+      isPaymentOk: true,
+      isDelivered: true,
+    }),
+    query,
+  )
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await userCompletedOrdersQuery.modelQuery;
+  const pagination = await userCompletedOrdersQuery.countTotal();
 
   return {
     pagination,
@@ -143,4 +178,5 @@ export const OrderServices = {
   updateProductQtyIntoDB,
   getMyOrderCartFromDB,
   getMyCurrentOrdersFromDB,
+  getMyCompletedOrdersFromDB,
 };
