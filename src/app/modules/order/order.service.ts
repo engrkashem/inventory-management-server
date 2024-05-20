@@ -85,7 +85,7 @@ const getMyOrderCartFromDB = async (
 
   // Get all orders from user cart
   const userCartQuery = new QueryBuilder<TOrder>(
-    Order.find({ buyer: user?._id, isPaymentOk: false }),
+    Order.find({ buyer: user?._id, isPaymentOk: false, isCancelled: false }),
     query,
   )
     .search([])
@@ -120,6 +120,7 @@ const getMyCurrentOrdersFromDB = async (
       buyer: user?._id,
       isPaymentOk: true,
       isDelivered: false,
+      isCancelled: false,
     }),
     query,
   )
@@ -155,6 +156,7 @@ const getMyCompletedOrdersFromDB = async (
       buyer: user?._id,
       isPaymentOk: true,
       isDelivered: true,
+      isCancelled: false,
     }),
     query,
   )
