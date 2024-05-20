@@ -65,8 +65,42 @@ const changePassword = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const forgotPassword = catchAsyncRequest(async (req, res) => {
+  const { email } = req.body;
+
+  const result = await AuthServices.forgotPasswordDB(email);
+
+  const links = {
+    self: `POST: ${config.BASE_URL}/auth/forgot-password`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Password reset link is generated successfully',
+    data: result,
+    pagination: {},
+    links,
+  });
+});
+
+const resetPassword = catchAsyncRequest(async (req, res) => {
+  const token = req.headers.authorization;
+
+  const result = await AuthServices.resetPasswordDB(req.body, token as string);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Password reset is successful',
+    data: result,
+  });
+});
+
 export const AuthControllers = {
   login,
   refreshToken,
   changePassword,
+  forgotPassword,
+  resetPassword,
 };

@@ -3,6 +3,7 @@ import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import AppError from '../../errors/AppError';
+import { sendEmail } from '../../utils/sendEmail';
 import { User } from '../user/user.model';
 import { TChangePassword, TJwtPayload, TLogin } from './auth.interface';
 import { createToken, verifyToken, verifyUser } from './auth.utils';
@@ -127,8 +128,87 @@ const changePasswordIntoDB = async (
   };
 };
 
+const forgotPasswordDB = async (email: string) => {
+  const user = await User.isUserExistsByEmail(email);
+
+  // check if user exists
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found');
+  }
+
+  // check if user is deleted or blocked
+  verifyUser(user);
+
+  // generate access Token
+  const jwtPayload: TJwtPayload = {
+    email: user?.email,
+    _id: user?._id,
+    role: user?.role,
+  };
+  const accessSecret = config.ACCESS_TOKEN_SECRET as string;
+  const resetToken = createToken(jwtPayload, accessSecret, '10m');
+
+  const resetUILink = `${config.CLIENT_ROOT_URL}?id=${user?.id}&token=${resetToken}`;
+
+  sendEmail(user?.email, resetUILink);
+
+  return config.NODE_ENV === 'development' ? resetUILink : null;
+};
+
+const resetPasswordDB = async (
+  payload: { id: string; newPassword: string },
+  token: string,
+) => {
+  const user = await User.isUserExistsByCustomId(payload?.id);
+
+  // check if user exists
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found');
+  }
+
+  // check if user is deleted
+  if (user.isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted');
+  }
+
+  // check if user is blocked
+  if (user?.status === 'blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked');
+  }
+
+  // check if the token is valid
+  const decodedUser = verifyToken(token, config.jwtAccessSecret as string);
+
+  // check if user id and token for what student is valid
+  if (decodedUser?.userId !== payload?.id) {
+    // console.log(decodedUser?.userId, payload?.id);
+    throw new AppError(httpStatus.FORBIDDEN, 'Forbidden user request');
+  }
+
+  // first hash new password before changing password
+  const hashedNewPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.saltRounds),
+  );
+
+  // send request to change password to db
+  await User.findOneAndUpdate(
+    { id: decodedUser?.userId, role: decodedUser?.role },
+    {
+      password: hashedNewPassword,
+      needsPasswordChange: false,
+      passwordChangedAt: new Date(),
+    },
+    { new: true, runValidators: true },
+  );
+
+  return null;
+};
+
 export const AuthServices = {
   loginIntoDB,
   createTokenFromRefreshToken,
   changePasswordIntoDB,
+  forgotPasswordDB,
+  resetPasswordDB,
 };
