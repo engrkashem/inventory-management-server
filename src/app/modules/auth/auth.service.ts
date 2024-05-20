@@ -150,7 +150,9 @@ const forgotPasswordDB = async (email: string) => {
 
   const resetUILink = `${config.CLIENT_ROOT_URL}?id=${user?.id}&token=${resetToken}`;
 
-  sendEmail(user?.email, resetUILink);
+  const message = `You have a request for changing password. Please click on following link to reset password. It will valid only 10 minutes. ${resetUILink}`;
+
+  sendEmail(user?.email, message);
 
   return config.NODE_ENV === 'development' ? resetUILink : null;
 };

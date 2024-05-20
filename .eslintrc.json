@@ -20,8 +20,7 @@
     "no-unused-expressions": "error",
     "prefer-const": "warn",
     "no-console": "warn",
-    "no-undef": "error",
-    "@typescript-eslint/consistent-type-definitions": ["error", "type"]
+    "no-undef": "error"
   },
   "globals": {
     "process": "readonly"
