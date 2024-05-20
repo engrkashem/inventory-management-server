@@ -1,5 +1,6 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
+import QueryBuilder from '../../queryBuilder/QueryBuilder';
 import { Product } from '../product/product.model';
 import { User } from '../user/user.model';
 import { TOrder } from './order.interface';
@@ -60,7 +61,7 @@ const updateProductQtyIntoDB = async (
   });
 
   if (!order) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Order is nor found in your cart');
+    throw new AppError(httpStatus.NOT_FOUND, 'Order is not found in your cart');
   }
 
   const result = await Order.findByIdAndUpdate(orderId, payload, {
@@ -71,7 +72,39 @@ const updateProductQtyIntoDB = async (
   return result;
 };
 
+const getMyOrderCartFromDB = async (
+  userId: string,
+  query: Record<string, unknown>,
+) => {
+  // check if user exists
+  const user = await User.isUserExists(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+
+  // Get all orders from user cart
+  const userCartQuery = new QueryBuilder<TOrder>(
+    Order.find({ buyer: user?._id, isPaymentOk: false }),
+    query,
+  )
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await userCartQuery.modelQuery;
+  const pagination = await userCartQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
 export const OrderServices = {
   addToCartIntoDB,
   updateProductQtyIntoDB,
+  getMyOrderCartFromDB,
 };

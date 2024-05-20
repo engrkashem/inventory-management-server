@@ -52,7 +52,38 @@ const updateProductQty = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const getMyOrderCart = catchAsyncRequest(async (req, res) => {
+  const { _id: userId } = req.user;
+
+  const { result, pagination } = await OrderServices.getMyOrderCartFromDB(
+    userId,
+    req.query,
+  );
+
+  const links = {
+    self: `GET: ${orderRootUrl}/my-cart`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${orderRootUrl}/my-cart?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${orderRootUrl}/my-cart??page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: "User's cart retrieved successfully",
+    data: result,
+    pagination,
+    links,
+  });
+});
+
 export const OrderControllers = {
   addToCart,
   updateProductQty,
+  getMyOrderCart,
 };

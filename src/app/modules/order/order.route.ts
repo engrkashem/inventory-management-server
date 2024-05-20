@@ -33,4 +33,17 @@ router.patch(
   OrderControllers.updateProductQty,
 );
 
+router.get(
+  '/my-cart',
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.manager,
+    USER_ROLE.employee,
+    USER_ROLE.user,
+  ),
+
+  OrderControllers.getMyOrderCart,
+);
+
 export const OrderRoutes = router;
