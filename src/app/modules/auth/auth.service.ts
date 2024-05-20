@@ -159,28 +159,21 @@ const resetPasswordDB = async (
   payload: { id: string; newPassword: string },
   token: string,
 ) => {
-  const user = await User.isUserExistsByCustomId(payload?.id);
+  const user = await User.isUserExists(payload?.id);
 
   // check if user exists
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found');
   }
 
-  // check if user is deleted
-  if (user.isDeleted) {
-    throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted');
-  }
-
-  // check if user is blocked
-  if (user?.status === 'blocked') {
-    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked');
-  }
+  // check if user is deleted or blocked
+  verifyUser(user);
 
   // check if the token is valid
-  const decodedUser = verifyToken(token, config.jwtAccessSecret as string);
+  const decodedUser = verifyToken(token, config.ACCESS_TOKEN_SECRET as string);
 
   // check if user id and token for what student is valid
-  if (decodedUser?.userId !== payload?.id) {
+  if (decodedUser?._id !== payload?.id) {
     // console.log(decodedUser?.userId, payload?.id);
     throw new AppError(httpStatus.FORBIDDEN, 'Forbidden user request');
   }
@@ -188,16 +181,14 @@ const resetPasswordDB = async (
   // first hash new password before changing password
   const hashedNewPassword = await bcrypt.hash(
     payload.newPassword,
-    Number(config.saltRounds),
+    Number(config.BCRYPT_SALT_ROUNDS),
   );
 
   // send request to change password to db
-  await User.findOneAndUpdate(
-    { id: decodedUser?.userId, role: decodedUser?.role },
+  await User.findByIdAndUpdate(
+    decodedUser?._id,
     {
       password: hashedNewPassword,
-      needsPasswordChange: false,
-      passwordChangedAt: new Date(),
     },
     { new: true, runValidators: true },
   );

@@ -85,15 +85,21 @@ const forgotPassword = catchAsyncRequest(async (req, res) => {
 });
 
 const resetPassword = catchAsyncRequest(async (req, res) => {
-  const token = req.headers.authorization;
+  const token = req.headers.authorization?.split(' ')[1];
 
   const result = await AuthServices.resetPasswordDB(req.body, token as string);
 
+  const links = {
+    self: `POST: ${config.BASE_URL}/auth/reset-password`,
+  };
+
   sendResponse(res, {
     success: true,
-    statusCode: httpStatus.OK,
+    status: httpStatus.OK,
     message: 'Password reset is successful',
     data: result,
+    pagination: {},
+    links,
   });
 });
 
