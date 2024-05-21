@@ -73,32 +73,44 @@ router.get(
 // endpoints to get orders of diff state bt admin/officials
 router.get(
   '/',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
   OrderControllers.getAllOrders,
 );
 
 router.get(
   '/placed-orders',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
   OrderControllers.getAllPlacedOrders,
 );
 
 router.get(
   '/running-orders',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
   OrderControllers.getAllRunningOrders,
 );
 
 router.get(
   '/completed-orders',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
   OrderControllers.getAllCompletedOrders,
 );
 
 router.get(
   '/cancelled-orders',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
   OrderControllers.getAllCancelledOrders,
+);
+
+router.get(
+  '/:userId/placed-orders',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
+  OrderControllers.getUsersPlacedOrders,
+);
+
+router.get(
+  '/:userId/running-orders',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
+  OrderControllers.getUsersRunningOrders,
 );
 
 export const OrderRoutes = router;

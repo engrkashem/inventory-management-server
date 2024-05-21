@@ -259,7 +259,60 @@ const getAllCompletedOrdersFromDB = async (query: Record<string, unknown>) => {
 const getAllCancelledOrdersFromDB = async (query: Record<string, unknown>) => {
   // Get all orders from user cart
   const ordersQuery = new QueryBuilder<TOrder>(
-    Order.find({ isCancelled: false }),
+    Order.find({ isCancelled: true }),
+    query,
+  )
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await ordersQuery.modelQuery;
+  const pagination = await ordersQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
+const getUsersPlacedOrdersFromDB = async (
+  userId: string,
+  query: Record<string, unknown>,
+) => {
+  // Get all orders from user cart
+  const ordersQuery = new QueryBuilder<TOrder>(
+    Order.find({ buyer: userId, isPaymentOk: false, isCancelled: false }),
+    query,
+  )
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await ordersQuery.modelQuery;
+  const pagination = await ordersQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
+const getUsersRunningOrdersFromDB = async (
+  userId: string,
+  query: Record<string, unknown>,
+) => {
+  // Get all orders from user cart
+  const ordersQuery = new QueryBuilder<TOrder>(
+    Order.find({
+      buyer: userId,
+      isPaymentOk: true,
+      isDelivered: false,
+      isCancelled: false,
+    }),
     query,
   )
     .search([])
@@ -288,4 +341,6 @@ export const OrderServices = {
   getAllRunningOrdersFromDB,
   getAllCompletedOrdersFromDB,
   getAllCancelledOrdersFromDB,
+  getUsersPlacedOrdersFromDB,
+  getUsersRunningOrdersFromDB,
 };

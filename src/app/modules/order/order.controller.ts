@@ -277,6 +277,64 @@ const getAllCancelledOrders = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const getUsersPlacedOrders = catchAsyncRequest(async (req, res) => {
+  const { userId } = req.params;
+  const { data, pagination } = await OrderServices.getUsersPlacedOrdersFromDB(
+    userId,
+    req.query,
+  );
+
+  const links = {
+    self: `GET: ${orderRootUrl}/${userId}/placed-orders`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${orderRootUrl}/${userId}/placed-orders?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${orderRootUrl}/${userId}/placed-orders?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'All Placed Orders of this user are retrieved successfully',
+    data,
+    pagination,
+    links,
+  });
+});
+
+const getUsersRunningOrders = catchAsyncRequest(async (req, res) => {
+  const { userId } = req.params;
+  const { data, pagination } = await OrderServices.getUsersRunningOrdersFromDB(
+    userId,
+    req.query,
+  );
+
+  const links = {
+    self: `GET: ${orderRootUrl}/${userId}/running-orders`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${orderRootUrl}/${userId}/running-orders?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${orderRootUrl}/${userId}/running-orders?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'All running Orders of this user are retrieved successfully',
+    data,
+    pagination,
+    links,
+  });
+});
+
 export const OrderControllers = {
   addToCart,
   updateProductQty,
@@ -288,4 +346,6 @@ export const OrderControllers = {
   getAllRunningOrders,
   getAllCompletedOrders,
   getAllCancelledOrders,
+  getUsersPlacedOrders,
+  getUsersRunningOrders,
 };
