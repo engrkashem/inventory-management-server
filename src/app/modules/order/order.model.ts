@@ -39,5 +39,10 @@ const orderSchema = new Schema<TOrder, OrderModel>(
   },
 );
 
+/*** Custom static methods ***/
+orderSchema.statics.isOrderExists = async function (id: string) {
+  return await Order.findById(id);
+};
+
 /*** Order Model ***/
 export const Order = model<TOrder, OrderModel>('Order', orderSchema);

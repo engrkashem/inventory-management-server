@@ -33,5 +33,10 @@ const salesSchema = new Schema<TSales, SalesModel>(
   },
 );
 
+/*** Custom static methods ***/
+salesSchema.statics.isSalesExists = async function (id: string) {
+  return await Sales.findById(id);
+};
+
 /*** Sales Model ***/
 export const Sales = model<TSales, SalesModel>('Sales', salesSchema);
