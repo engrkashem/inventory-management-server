@@ -1,7 +1,24 @@
 import { Schema, model } from 'mongoose';
-import { SalesModel, TSales } from './sales.interface';
+import { SalesModel, TSales, TTransactionInfo } from './sales.interface';
 
 /*** Sales Schema ***/
+const transactionInfoSchema = new Schema<TTransactionInfo>(
+  {
+    sessionKey: {
+      type: String,
+      default: '',
+    },
+    transactionId: {
+      type: String,
+      default: '',
+    },
+    isConfirmed: { type: Boolean, default: false },
+  },
+  {
+    _id: false,
+  },
+);
+
 const salesSchema = new Schema<TSales, SalesModel>(
   {
     product: {
@@ -19,14 +36,11 @@ const salesSchema = new Schema<TSales, SalesModel>(
       required: [true, 'Order id is required.'],
       ref: 'Order',
     },
-    balance: {
+    amount: {
       type: Number,
-      required: [true, 'Balance Amount is required.'],
+      required: [true, 'Amount is required.'],
     },
-    transactionInfo: {
-      type: String,
-      required: [true, 'Transaction information is required.'],
-    },
+    transactionInfo: transactionInfoSchema,
   },
   {
     timestamps: true,

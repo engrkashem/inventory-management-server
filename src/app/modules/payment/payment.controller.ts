@@ -13,7 +13,7 @@ const makePayment = catchAsyncRequest(async (req, res) => {
     self: `GET: ${config.BASE_URL}/payments/${orderId}`,
     paymentGatewayUrl: `POST: ${result?.GatewayPageURL}`,
   };
-  //4102C4422FF47C2654EC337EEB4A6187
+
   sendResponse(res, {
     status: httpStatus.OK,
     success: true,

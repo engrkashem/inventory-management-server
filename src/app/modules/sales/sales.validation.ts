@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const makePaymentToConfirmOrderValidationSchema = z.object({
+const confirmOrderValidationSchema = z.object({
   body: z.object({
     order: z.string({
       required_error: 'Order id is required',
@@ -10,5 +10,5 @@ const makePaymentToConfirmOrderValidationSchema = z.object({
 });
 
 export const SalesValidations = {
-  makePaymentToConfirmOrderValidationSchema,
+  confirmOrderValidationSchema,
 };

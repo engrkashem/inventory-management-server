@@ -6,15 +6,12 @@ import { SalesServices } from './sales.service';
 
 const salesRootUrl = `${config.BASE_URL}/sales`;
 
-const makePaymentToConfirmOrder = catchAsyncRequest(async (req, res) => {
-  const { _id: userId } = req.user;
-  const result = await SalesServices.makePaymentToConfirmOrderIntoDB(
-    userId,
-    req.body,
-  );
+const confirmOrder = catchAsyncRequest(async (req, res) => {
+  const { transactionId } = req.params;
+  const result = await SalesServices.confirmOrderIntoDB(transactionId);
 
   const links = {
-    self: `POST: ${salesRootUrl}/make-payment`,
+    self: `POST: ${salesRootUrl}/${transactionId}`,
   };
 
   sendResponse(res, {
@@ -28,5 +25,5 @@ const makePaymentToConfirmOrder = catchAsyncRequest(async (req, res) => {
 });
 
 export const SalesControllers = {
-  makePaymentToConfirmOrder,
+  confirmOrder,
 };
