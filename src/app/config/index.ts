@@ -17,4 +17,7 @@ export default {
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
   SUPER_ADMIN_PASS: process.env.SUPER_ADMIN_PASS,
   CLIENT_ROOT_URL: process.env.CLIENT_ROOT_URL,
+  SSL_STORE_ID: process.env.SSL_STORE_ID,
+  SSL_STORE_API_KEY: process.env.SSL_STORE_API_KEY,
+  SSL_API_URL: process.env.SSL_API_URL,
 };

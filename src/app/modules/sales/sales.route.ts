@@ -8,7 +8,7 @@ import { SalesValidations } from './sales.validation';
 const router = Router();
 
 router.post(
-  '/make-payment',
+  '/',
   auth(
     USER_ROLE.superAdmin,
     USER_ROLE.admin,
