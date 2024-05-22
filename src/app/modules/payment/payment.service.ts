@@ -1,4 +1,5 @@
 import httpStatus from 'http-status';
+import { Types } from 'mongoose';
 import SSLCommerz from 'sslcommerz-nodejs';
 import config from '../../config';
 import AppError from '../../errors/AppError';
@@ -26,7 +27,9 @@ const makePaymentIntoDB = async (userId: string, orderId: string) => {
 
   const nonce = String(order?.netAmount);
   const message = String(order?._id);
-  const tran_id = await getTransactionId(nonce + message);
+  const id = await getTransactionId(nonce + message);
+  const _id = new Types.ObjectId(id);
+  const tran_id = id.slice(0, 11);
 
   const sslcommerz = new SSLCommerz(sslConfig);
   const post_body = {};
@@ -55,16 +58,25 @@ const makePaymentIntoDB = async (userId: string, orderId: string) => {
   const { status, sessionkey, GatewayPageURL } = transaction_response;
 
   if (status === 'SUCCESS') {
-    await Sales.create({
-      product: order?.product,
-      buyer: order?.buyer,
-      order: order?._id,
-      amount: order?.netAmount,
-      transactionInfo: {
-        sessionkey,
-        transactionId: tran_id,
+    await Sales.findByIdAndUpdate(
+      _id,
+      {
+        _id,
+        product: order?.product,
+        buyer: order?.buyer,
+        order: order?._id,
+        amount: order?.netAmount,
+        transactionInfo: {
+          sessionkey,
+          transactionId: tran_id,
+        },
       },
-    });
+      {
+        new: true,
+        upsert: true,
+        runValidators: true,
+      },
+    );
   }
 
   return {

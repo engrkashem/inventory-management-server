@@ -4,7 +4,7 @@ import { SalesModel, TSales, TTransactionInfo } from './sales.interface';
 /*** Sales Schema ***/
 const transactionInfoSchema = new Schema<TTransactionInfo>(
   {
-    sessionKey: {
+    sessionkey: {
       type: String,
       default: '',
     },
