@@ -3,6 +3,6 @@ import { SalesControllers } from './sales.controller';
 
 const router = Router();
 
-router.post('/:transactionId', SalesControllers.confirmOrder);
+router.post('/:salesId', SalesControllers.confirmOrder);
 
 export const SalesRoutes = router;

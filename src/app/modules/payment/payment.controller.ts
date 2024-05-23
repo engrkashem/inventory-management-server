@@ -5,12 +5,12 @@ import sendResponse from '../../utils/sendResponse';
 import { PaymentServices } from './payment.service';
 
 const makePayment = catchAsyncRequest(async (req, res) => {
-  const { orderId } = req.params;
   const { _id: userId } = req.user;
-  const result = await PaymentServices.makePaymentIntoDB(userId, orderId);
+  const { orders } = req.body;
+  const result = await PaymentServices.makePaymentIntoDB(userId, orders);
 
   const links = {
-    self: `GET: ${config.BASE_URL}/payments/${orderId}`,
+    self: `GET: ${config.BASE_URL}/payments`,
     paymentGatewayUrl: `POST: ${result?.GatewayPageURL}`,
   };
 

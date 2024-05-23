@@ -21,21 +21,25 @@ const transactionInfoSchema = new Schema<TTransactionInfo>(
 
 const salesSchema = new Schema<TSales, SalesModel>(
   {
-    product: {
-      type: Schema.Types.ObjectId,
-      required: [true, 'Product id is required.'],
-      ref: 'Product',
-    },
+    products: [
+      {
+        type: Schema.Types.ObjectId,
+        required: [true, 'Product id is required.'],
+        ref: 'Product',
+      },
+    ],
     buyer: {
       type: Schema.Types.ObjectId,
       required: [true, 'Buyer/User id is required.'],
       ref: 'User',
     },
-    order: {
-      type: Schema.Types.ObjectId,
-      required: [true, 'Order id is required.'],
-      ref: 'Order',
-    },
+    orders: [
+      {
+        type: Schema.Types.ObjectId,
+        required: [true, 'Order id is required.'],
+        ref: 'Order',
+      },
+    ],
     amount: {
       type: Number,
       required: [true, 'Amount is required.'],

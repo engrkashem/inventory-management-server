@@ -5,33 +5,27 @@ import config from '../../config';
 import AppError from '../../errors/AppError';
 import { Order } from '../order/order.model';
 import { Sales } from '../sales/sales.model';
+import { User } from '../user/user.model';
 import { sslConfig } from './payment.constant';
 import { createTransactionId, getUniqueId } from './payment.utils';
 
-const makePaymentIntoDB = async (userId: string, orderId: string) => {
-  // check if order exists
-  const order = await Order.findById(orderId)
-    .populate({ path: 'buyer', select: '_id name address contactNo' })
-    .populate({ path: 'product', select: '_id name category' });
+const makePaymentIntoDB = async (userId: string, orders: string[]) => {
+  // check if user exists
+  const user = await User.isUserExists(userId);
 
-  if (!order) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Order is not found');
-  }
-
-  // check if authorized user and order creation user is same
-  if (userId !== String(order?.buyer?._id)) {
-    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized access');
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
   }
 
   // check if user profile(name, address) is updated
   if (
-    !order?.buyer?.name ||
-    !order?.buyer?.name?.firstName ||
-    !order?.buyer?.address ||
-    !order?.buyer?.address?.street ||
-    !order?.buyer?.address?.district ||
-    !order?.buyer?.address?.country ||
-    !order?.buyer?.contactNo
+    !user?.name ||
+    !user?.name?.firstName ||
+    !user?.address ||
+    !user?.address?.street ||
+    !user?.address?.district ||
+    !user?.address?.country ||
+    !user?.contactNo
   ) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -39,16 +33,52 @@ const makePaymentIntoDB = async (userId: string, orderId: string) => {
     );
   }
 
+  // check all orders exists and calculate payable amount
+  const ordersWithTotalAmountAndProducts = await Order.aggregate([
+    { $match: { _id: { $in: orders.map((id) => new Types.ObjectId(id)) } } },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'product',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: '$netAmount' },
+        ordersDetails: { $push: '$$ROOT' },
+        products: { $push: '$product' },
+      },
+    },
+  ]);
+
+  const { ordersDetails, totalAmount, products } =
+    ordersWithTotalAmountAndProducts[0];
+
+  // check if some orders missing
+  if (ordersDetails.length !== orders.length) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Some order are invalid');
+  }
+
   // SSLCommerz settings
-  const nonce = String(order?.netAmount);
-  const message = String(order?._id);
+  const nonce = String(totalAmount);
+  const message = orders.join('-');
   const uid = await getUniqueId(nonce + message);
   const _id = new Types.ObjectId(uid);
   const tran_id = createTransactionId(uid);
 
+  // check if already payment completed
+  const sales = await Sales.isSalesExists(uid);
+
+  if (sales?.transactionInfo?.isConfirmed) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Payment already made');
+  }
+
   const sslcommerz = new SSLCommerz(sslConfig);
   const post_body = {};
-  post_body['total_amount'] = 150.25;
+  post_body['total_amount'] = totalAmount;
   post_body['currency'] = 'BDT';
   post_body['tran_id'] = tran_id;
   post_body['success_url'] = `${config.BASE_URL}/sales/${uid}`;
@@ -56,17 +86,17 @@ const makePaymentIntoDB = async (userId: string, orderId: string) => {
   post_body['cancel_url'] = `${config.BASE_URL}/sales/${uid}`;
   post_body['emi_option'] = 0;
   post_body['cus_name'] =
-    `${order?.buyer?.name?.firstName} ${order?.buyer?.name?.middleName} ${order?.buyer?.name?.lastName}`;
-  post_body['cus_email'] = order?.buyer?.email;
-  post_body['cus_phone'] = order?.buyer?.contactNo;
-  post_body['cus_add1'] = order?.buyer?.address?.street;
-  post_body['cus_city'] = order?.buyer?.address?.district;
-  post_body['cus_country'] = order?.buyer?.address?.country;
+    `${user?.name?.firstName} ${user?.name?.middleName} ${user?.name?.lastName}`;
+  post_body['cus_email'] = user?.email;
+  post_body['cus_phone'] = user?.contactNo;
+  post_body['cus_add1'] = user?.address?.street;
+  post_body['cus_city'] = user?.address?.district;
+  post_body['cus_country'] = user?.address?.country;
   post_body['shipping_method'] = 'NO';
   post_body['multi_card_name'] = '';
   post_body['num_of_item'] = 1;
-  post_body['product_name'] = order?.product?.name || 'sample';
-  post_body['product_category'] = order?.product?.category || 'none';
+  post_body['product_name'] = 'sample';
+  post_body['product_category'] = 'none';
   post_body['product_profile'] = 'general';
 
   const transaction_response = await sslcommerz.init_transaction(post_body);
@@ -78,10 +108,10 @@ const makePaymentIntoDB = async (userId: string, orderId: string) => {
       _id,
       {
         _id,
-        product: order?.product,
-        buyer: order?.buyer,
-        order: order?._id,
-        amount: order?.netAmount,
+        products,
+        buyer: user?._id,
+        orders,
+        amount: totalAmount,
         transactionInfo: {
           sessionkey,
           transactionId: tran_id,
@@ -105,3 +135,9 @@ const makePaymentIntoDB = async (userId: string, orderId: string) => {
 export const PaymentServices = {
   makePaymentIntoDB,
 };
+
+/**
+
+
+
+ */

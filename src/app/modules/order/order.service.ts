@@ -6,13 +6,16 @@ import { User } from '../user/user.model';
 import { TOrder } from './order.interface';
 import { Order } from './order.model';
 
-const addToCartIntoDB = async (payload: TOrder) => {
+const addToCartIntoDB = async (userId: string, payload: Partial<TOrder>) => {
   // check if user exists
-  const user = await User.isUserExists(payload.buyer);
+  const user = await User.isUserExists(userId);
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user/buyer is not found');
   }
+
+  // update buyer
+  payload.buyer = user._id;
 
   // check if product exists
   const product = await Product.isProductExists(payload.product);

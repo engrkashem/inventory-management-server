@@ -7,7 +7,8 @@ import { OrderServices } from './order.service';
 const orderRootUrl = `${config.BASE_URL}/orders`;
 
 const addToCart = catchAsyncRequest(async (req, res) => {
-  const result = await OrderServices.addToCartIntoDB(req.body);
+  const { _id: userId } = req.user;
+  const result = await OrderServices.addToCartIntoDB(userId, req.body);
 
   const links = {
     self: `POST: ${orderRootUrl}`,

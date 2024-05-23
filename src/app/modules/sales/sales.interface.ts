@@ -7,9 +7,9 @@ export type TTransactionInfo = {
 };
 
 export type TSales = {
-  product: Types.ObjectId;
+  products: [Types.ObjectId];
   buyer: Types.ObjectId;
-  order: Types.ObjectId;
+  orders: [Types.ObjectId];
   amount: number;
   transactionInfo: TTransactionInfo;
 };
