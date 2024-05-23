@@ -6,12 +6,12 @@ import AppError from '../../errors/AppError';
 import { Order } from '../order/order.model';
 import { Sales } from '../sales/sales.model';
 import { sslConfig } from './payment.constant';
-import { getTransactionId } from './payment.utils';
+import { createTransactionId, getUniqueId } from './payment.utils';
 
 const makePaymentIntoDB = async (userId: string, orderId: string) => {
   // check if order exists
   const order = await Order.findById(orderId)
-    .populate({ path: 'buyer', select: '_id name address' })
+    .populate({ path: 'buyer', select: '_id name address contactNo' })
     .populate({ path: 'product', select: '_id name category' });
 
   if (!order) {
@@ -40,21 +40,20 @@ const makePaymentIntoDB = async (userId: string, orderId: string) => {
   }
 
   // SSLCommerz settings
-
   const nonce = String(order?.netAmount);
   const message = String(order?._id);
-  const id = await getTransactionId(nonce + message);
-  const _id = new Types.ObjectId(id);
-  const tran_id = id.slice(0, 11);
+  const uid = await getUniqueId(nonce + message);
+  const _id = new Types.ObjectId(uid);
+  const tran_id = createTransactionId(uid);
 
   const sslcommerz = new SSLCommerz(sslConfig);
   const post_body = {};
   post_body['total_amount'] = 150.25;
   post_body['currency'] = 'BDT';
   post_body['tran_id'] = tran_id;
-  post_body['success_url'] = `${config.BASE_URL}/sales/${tran_id}`;
-  post_body['fail_url'] = `${config.BASE_URL}/sales/${tran_id}`;
-  post_body['cancel_url'] = `${config.BASE_URL}/sales/${tran_id}`;
+  post_body['success_url'] = `${config.BASE_URL}/sales/${uid}`;
+  post_body['fail_url'] = `${config.BASE_URL}/sales/${uid}`;
+  post_body['cancel_url'] = `${config.BASE_URL}/sales/${uid}`;
   post_body['emi_option'] = 0;
   post_body['cus_name'] =
     `${order?.buyer?.name?.firstName} ${order?.buyer?.name?.middleName} ${order?.buyer?.name?.lastName}`;
