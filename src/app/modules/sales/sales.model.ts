@@ -1,7 +1,38 @@
 import { Schema, model } from 'mongoose';
-import { SalesModel, TSales, TTransactionInfo } from './sales.interface';
+import {
+  SalesModel,
+  TOrderInfo,
+  TSales,
+  TTransactionInfo,
+} from './sales.interface';
 
-/*** Sales Schema ***/
+/*** Sales Schemas ***/
+const orderInfoSchema = new Schema<TOrderInfo>(
+  {
+    order: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'Order id is required.'],
+      ref: 'Order',
+    },
+    product: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'Product id is required.'],
+      ref: 'Product',
+    },
+    qty: {
+      type: Number,
+      required: [true, 'Quantity of product in order is required.'],
+    },
+    price: {
+      type: Number,
+      required: [true, 'Order price is required.'],
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
 const transactionInfoSchema = new Schema<TTransactionInfo>(
   {
     sessionkey: {
@@ -21,25 +52,12 @@ const transactionInfoSchema = new Schema<TTransactionInfo>(
 
 const salesSchema = new Schema<TSales, SalesModel>(
   {
-    products: [
-      {
-        type: Schema.Types.ObjectId,
-        required: [true, 'Product id is required.'],
-        ref: 'Product',
-      },
-    ],
     buyer: {
       type: Schema.Types.ObjectId,
       required: [true, 'Buyer/User id is required.'],
       ref: 'User',
     },
-    orders: [
-      {
-        type: Schema.Types.ObjectId,
-        required: [true, 'Order id is required.'],
-        ref: 'Order',
-      },
-    ],
+    orderInfo: [orderInfoSchema],
     amount: {
       type: Number,
       required: [true, 'Amount is required.'],

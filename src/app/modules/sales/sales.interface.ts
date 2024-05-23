@@ -6,10 +6,16 @@ export type TTransactionInfo = {
   isConfirmed: boolean;
 };
 
+export type TOrderInfo = {
+  order: Types.ObjectId;
+  product: Types.ObjectId;
+  qty: number;
+  price: number;
+};
+
 export type TSales = {
-  products: [Types.ObjectId];
   buyer: Types.ObjectId;
-  orders: [Types.ObjectId];
+  orderInfo: TOrderInfo[];
   amount: number;
   transactionInfo: TTransactionInfo;
 };
