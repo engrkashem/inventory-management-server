@@ -1,5 +1,5 @@
 const confirmOrderIntoDB = async (transactionId: string) => {
-  console.log(transactionId);
+  // console.log(transactionId);
 
   return transactionId;
 };

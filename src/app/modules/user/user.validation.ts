@@ -53,6 +53,25 @@ const createUserValidationSchema = z.object({
   }),
 });
 
+const updateUserValidationSchema = z.object({
+  body: z.object({
+    name: nameValidationSchema.optional(),
+    address: addressValidationSchema.optional(),
+    gender: z.enum([...GENDER] as [string, ...string[]]).optional(),
+    contactNo: z
+      .string({ invalid_type_error: 'Contact number must be string' })
+      .optional(),
+    profilePic: z
+      .string({ invalid_type_error: 'Profile pic must be an url/string' })
+      .optional(),
+    role: z.enum([...ROLE] as [string, ...string[]]).optional(),
+    isDeleted: z.boolean().optional(),
+    isGoogleAuthenticated: z.boolean().optional(),
+    isBlocked: z.boolean().optional(),
+  }),
+});
+
 export const UserValidations = {
   createUserValidationSchema,
+  updateUserValidationSchema,
 };

@@ -9,7 +9,7 @@ const createUser = catchAsyncRequest(async (req, res) => {
   const result = await UserServices.createUserIntoDB(req.body);
 
   const links = {
-    self: `POST: ${userRootUrl}/create-user`,
+    self: `POST: ${userRootUrl}/signup`,
   };
 
   // sending response
@@ -22,6 +22,26 @@ const createUser = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const updateUser = catchAsyncRequest(async (req, res) => {
+  const { _id: userId } = req.user;
+
+  const result = await UserServices.updateUserIntoDB(userId, req.body);
+
+  const links = {
+    self: `PATCH: ${userRootUrl}`,
+  };
+
+  // sending response
+  sendResponse(res, {
+    status: 201,
+    success: true,
+    message: 'User profile updated successfully.',
+    data: result,
+    links,
+  });
+});
+
 export const UserControllers = {
   createUser,
+  updateUser,
 };

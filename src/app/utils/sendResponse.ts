@@ -26,8 +26,8 @@ const sendResponse = <T>(res: Response, data: TResponse<T>) => {
     success: data?.success,
     message: data?.message,
     data: data?.data,
-    pagination: data.pagination,
-    links: data.links,
+    pagination: data?.pagination || {},
+    links: data?.links,
   });
 };
 

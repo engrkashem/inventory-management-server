@@ -72,7 +72,11 @@ const userSchema = new Schema<TUser, UserModel>(
     },
     address: { type: addressSchema },
     contactNo: { type: String, trim: true },
-    profilePic: { type: String, default: '' },
+    profilePic: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/djn7wzals/image/upload/v1703391369/cld-sample.jpg',
+    },
     role: {
       type: String,
       enum: ROLE,

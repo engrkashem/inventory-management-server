@@ -1,5 +1,7 @@
 import { Router } from 'express';
+import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
+import { USER_ROLE } from './user.constants';
 import { UserControllers } from './user.controller';
 import { UserValidations } from './user.validation';
 
@@ -10,6 +12,19 @@ router.post(
   '/signup',
   validateRequest(UserValidations.createUserValidationSchema),
   UserControllers.createUser,
+);
+
+router.patch(
+  '/',
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.manager,
+    USER_ROLE.employee,
+    USER_ROLE.user,
+  ),
+  validateRequest(UserValidations.updateUserValidationSchema),
+  UserControllers.updateUser,
 );
 
 export const UserRoutes = router;
