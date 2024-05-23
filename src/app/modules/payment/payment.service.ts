@@ -10,17 +10,33 @@ import { getTransactionId } from './payment.utils';
 
 const makePaymentIntoDB = async (userId: string, orderId: string) => {
   // check if order exists
-  const order = await Order.isOrderExists(orderId);
+  const order = await Order.findById(orderId)
+    .populate({ path: 'buyer', select: '_id name address' })
+    .populate({ path: 'product', select: '_id name category' });
 
   if (!order) {
     throw new AppError(httpStatus.NOT_FOUND, 'Order is not found');
   }
 
   // check if authorized user and order creation user is same
-  if (userId !== String(order?._id)) {
-    if (!order) {
-      throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized access');
-    }
+  if (userId !== String(order?.buyer?._id)) {
+    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized access');
+  }
+
+  // check if user profile(name, address) is updated
+  if (
+    !order?.buyer?.name ||
+    !order?.buyer?.name?.firstName ||
+    !order?.buyer?.address ||
+    !order?.buyer?.address?.street ||
+    !order?.buyer?.address?.district ||
+    !order?.buyer?.address?.country ||
+    !order?.buyer?.contactNo
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Please update your profile (name, address, contact number)',
+    );
   }
 
   // SSLCommerz settings
@@ -40,17 +56,18 @@ const makePaymentIntoDB = async (userId: string, orderId: string) => {
   post_body['fail_url'] = `${config.BASE_URL}/sales/${tran_id}`;
   post_body['cancel_url'] = `${config.BASE_URL}/sales/${tran_id}`;
   post_body['emi_option'] = 0;
-  post_body['cus_name'] = 'cus_name';
-  post_body['cus_email'] = 'cus_email';
-  post_body['cus_phone'] = 'cus_phone';
-  post_body['cus_add1'] = 'Dhaka';
-  post_body['cus_city'] = 'Dhaka';
-  post_body['cus_country'] = 'Bangladesh';
+  post_body['cus_name'] =
+    `${order?.buyer?.name?.firstName} ${order?.buyer?.name?.middleName} ${order?.buyer?.name?.lastName}`;
+  post_body['cus_email'] = order?.buyer?.email;
+  post_body['cus_phone'] = order?.buyer?.contactNo;
+  post_body['cus_add1'] = order?.buyer?.address?.street;
+  post_body['cus_city'] = order?.buyer?.address?.district;
+  post_body['cus_country'] = order?.buyer?.address?.country;
   post_body['shipping_method'] = 'NO';
   post_body['multi_card_name'] = '';
   post_body['num_of_item'] = 1;
-  post_body['product_name'] = 'none';
-  post_body['product_category'] = 'none';
+  post_body['product_name'] = order?.product?.name || 'sample';
+  post_body['product_category'] = order?.product?.category || 'none';
   post_body['product_profile'] = 'general';
 
   const transaction_response = await sslcommerz.init_transaction(post_body);

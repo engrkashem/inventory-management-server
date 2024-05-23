@@ -30,10 +30,22 @@ const userNameSchema = new Schema<TUserName>(
 
 const addressSchema = new Schema<TUserName>(
   {
-    street: { type: String, trim: true },
-    district: { type: String, trim: true },
-    division: { type: String, trim: true },
-    country: { type: String, trim: true },
+    street: { type: String, require: [true, 'Street is required'], trim: true },
+    district: {
+      type: String,
+      require: [true, 'District is required'],
+      trim: true,
+    },
+    division: {
+      type: String,
+      require: [true, 'Division is required'],
+      trim: true,
+    },
+    country: {
+      type: String,
+      require: [true, 'Country is required'],
+      trim: true,
+    },
   },
   {
     _id: false,

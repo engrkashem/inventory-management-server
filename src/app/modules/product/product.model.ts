@@ -10,6 +10,11 @@ const productSchema = new Schema<TProduct, ProductModel>(
       trim: true,
       unique: true,
     },
+    category: {
+      type: String,
+      required: [true, 'Your product category is required.'],
+      trim: true,
+    },
     qty: {
       type: Number,
       required: [true, 'Product stock quantity is required'],

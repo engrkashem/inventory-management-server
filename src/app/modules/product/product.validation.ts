@@ -6,6 +6,10 @@ const createProductValidationSchema = z.object({
       required_error: 'Product name is required',
       invalid_type_error: 'Product name must be string',
     }),
+    category: z.string({
+      required_error: 'Product category is required',
+      invalid_type_error: 'Product category must be string',
+    }),
     qty: z.number({
       required_error: 'Product quantity is required',
       invalid_type_error: 'Product quantity must be number',
@@ -32,6 +36,12 @@ const updateProductValidationSchema = z.object({
       .string({
         required_error: 'Product name is required',
         invalid_type_error: 'Product name must be string',
+      })
+      .optional(),
+    category: z
+      .string({
+        required_error: 'Product category is required',
+        invalid_type_error: 'Product category must be string',
       })
       .optional(),
     qty: z
