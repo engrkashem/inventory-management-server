@@ -75,6 +75,31 @@ const updateProductQtyIntoDB = async (
   return result;
 };
 
+const updateDeliveryStatusIntoDB = async (orderId: string) => {
+  // check if order exists
+  const order = await Order.findOne({
+    _id: orderId,
+    isPaymentOk: true,
+    isDelivered: false,
+    isCancelled: false,
+  });
+
+  if (!order) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Order is not found');
+  }
+
+  // change delivery status
+  const result = await Order.findByIdAndUpdate(
+    order?._id,
+    {
+      isDelivered: true,
+    },
+    { new: true, runValidators: true },
+  );
+
+  return result;
+};
+
 const getMyOrderCartFromDB = async (
   userId: string,
   query: Record<string, unknown>,
@@ -217,7 +242,9 @@ const getAllPlacedOrdersFromDB = async (query: Record<string, unknown>) => {
   };
 };
 
-const getAllRunningOrdersFromDB = async (query: Record<string, unknown>) => {
+const getAllPendingDeliveryOrdersFromDB = async (
+  query: Record<string, unknown>,
+) => {
   // Get all orders from user cart
   const ordersQuery = new QueryBuilder<TOrder>(
     Order.find({ isPaymentOk: true, isDelivered: false, isCancelled: false }),
@@ -336,12 +363,13 @@ const getUsersRunningOrdersFromDB = async (
 export const OrderServices = {
   addToCartIntoDB,
   updateProductQtyIntoDB,
+  updateDeliveryStatusIntoDB,
   getMyOrderCartFromDB,
   getMyCurrentOrdersFromDB,
   getMyCompletedOrdersFromDB,
   getAllOrdersFromDB,
   getAllPlacedOrdersFromDB,
-  getAllRunningOrdersFromDB,
+  getAllPendingDeliveryOrdersFromDB,
   getAllCompletedOrdersFromDB,
   getAllCancelledOrdersFromDB,
   getUsersPlacedOrdersFromDB,

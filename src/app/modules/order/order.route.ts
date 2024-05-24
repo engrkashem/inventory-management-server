@@ -33,6 +33,17 @@ router.patch(
   OrderControllers.updateProductQty,
 );
 
+router.patch(
+  '/:orderId/update-delivery-status',
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.manager,
+    USER_ROLE.employee,
+  ),
+  OrderControllers.updateDeliveryStatus,
+);
+
 // endpoints to get orders of different state by related user
 router.get(
   '/my-cart',
@@ -84,9 +95,9 @@ router.get(
 );
 
 router.get(
-  '/running-orders',
+  '/delivery-pending-orders',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.manager),
-  OrderControllers.getAllRunningOrders,
+  OrderControllers.getAllPendingDeliveryOrders,
 );
 
 router.get(

@@ -53,6 +53,22 @@ const updateProductQty = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const updateDeliveryStatus = catchAsyncRequest(async (req, res) => {
+  const { orderId } = req.params;
+
+  const result = await OrderServices.updateDeliveryStatusIntoDB(orderId);
+
+  const links = {};
+
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Delivery status changed to delivered(True)',
+    data: result,
+    links,
+  });
+});
+
 const getMyOrderCart = catchAsyncRequest(async (req, res) => {
   const { _id: userId } = req.user;
 
@@ -197,10 +213,9 @@ const getAllPlacedOrders = catchAsyncRequest(async (req, res) => {
   });
 });
 
-const getAllRunningOrders = catchAsyncRequest(async (req, res) => {
-  const { data, pagination } = await OrderServices.getAllRunningOrdersFromDB(
-    req.query,
-  );
+const getAllPendingDeliveryOrders = catchAsyncRequest(async (req, res) => {
+  const { data, pagination } =
+    await OrderServices.getAllPendingDeliveryOrdersFromDB(req.query);
 
   const links = {
     self: `GET: ${orderRootUrl}`,
@@ -217,7 +232,7 @@ const getAllRunningOrders = catchAsyncRequest(async (req, res) => {
   sendResponse(res, {
     status: httpStatus.OK,
     success: true,
-    message: 'All Running Orders retrieved successfully',
+    message: 'All Delivery Pending Orders retrieved successfully',
     data,
     pagination,
     links,
@@ -339,12 +354,13 @@ const getUsersRunningOrders = catchAsyncRequest(async (req, res) => {
 export const OrderControllers = {
   addToCart,
   updateProductQty,
+  updateDeliveryStatus,
   getMyOrderCart,
   getMyCurrentOrders,
   getMyCompletedOrders,
   getAllOrders,
   getAllPlacedOrders,
-  getAllRunningOrders,
+  getAllPendingDeliveryOrders,
   getAllCompletedOrders,
   getAllCancelledOrders,
   getUsersPlacedOrders,
