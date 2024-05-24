@@ -2,8 +2,10 @@
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 import AppError from '../../errors/AppError';
+import { Order } from '../order/order.model';
 import { createTransactionId } from '../payment/payment.utils';
-import { Sales } from './sales.model';
+import { Product } from '../product/product.model';
+import { Balance, Sales } from './sales.model';
 
 const confirmOrderIntoDB = async (salesId: string) => {
   // check if sales created
@@ -22,15 +24,87 @@ const confirmOrderIntoDB = async (salesId: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, 'Transaction id mismatch');
   }
 
+  // check if order confirmation done previously
+  if (sales.transactionInfo.isConfirmed) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'This order is already confirmed and payment received',
+    );
+  }
+
   const session = await mongoose.startSession();
 
   try {
     await session.startTransaction();
 
-    // Make isConfirmed:true in sales collection into transactionInfo
     // Make isPaymentOk:true in order
+    for (const orderInfo of sales.orderInfo) {
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderInfo.order,
+        {
+          isPaymentOk: true,
+        },
+        { new: true, runValidators: true, session },
+      );
+
+      if (!updatedOrder) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update Order');
+      }
+    }
+
+    // Make isConfirmed:true in sales collection into transactionInfo
+    const updatedSales = await Sales.findByIdAndUpdate(
+      sales?._id,
+      {
+        'transactionInfo.isConfirmed': true,
+      },
+      { new: true, runValidators: true, session },
+    );
+
+    if (!updatedSales) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Failed to update transactionInfo.',
+      );
+    }
+
     // deduct product stock by order qty
+    for (const orderInfo of sales.orderInfo) {
+      const product = await Product.findById(orderInfo.product)
+        .session(session)
+        .exec();
+
+      if (!product) {
+        throw new AppError(
+          httpStatus.NOT_FOUND,
+          `product with ${orderInfo.product} id is not found`,
+        );
+      }
+
+      // Deduct the quantity from the product
+      product.qty -= orderInfo.qty;
+
+      // Save the changes to the product document
+      await product.save({ session });
+    }
     // add balance by sales amount
+    const isBalanceExists = await Balance.find();
+
+    let balance = 0;
+    if (isBalanceExists.length === 0) {
+      balance = await Balance.create({ balance: sales.amount });
+    } else {
+      const balanceId = isBalanceExists[0]._id;
+      const prevBalance = isBalanceExists[0].balance;
+      balance = await Balance.findByIdAndUpdate(
+        balanceId,
+        {
+          balance: prevBalance + sales.amount,
+        },
+        { new: true, runValidators: true, session },
+      );
+    }
+    return balance.balance;
 
     await session.commitTransaction();
     await session.endSession();

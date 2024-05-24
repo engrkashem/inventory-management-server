@@ -23,3 +23,7 @@ export type TSales = {
 export interface SalesModel extends Model<TSales> {
   isSalesExists(id: string): Promise<TSales | null>;
 }
+
+export type TBalance = {
+  balance: number;
+};

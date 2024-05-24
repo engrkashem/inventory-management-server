@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import {
   SalesModel,
+  TBalance,
   TOrderInfo,
   TSales,
   TTransactionInfo,
@@ -76,3 +77,19 @@ salesSchema.statics.isSalesExists = async function (id: string) {
 
 /*** Sales Model ***/
 export const Sales = model<TSales, SalesModel>('Sales', salesSchema);
+
+/*** Balance Schema ***/
+const balanceSchema = new Schema<TBalance>(
+  {
+    balance: {
+      type: Number,
+      required: [true, 'Balance is required.'],
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+/*** Balance Model ***/
+export const Balance = model<TBalance>('Balance', balanceSchema);
