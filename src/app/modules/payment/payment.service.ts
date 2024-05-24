@@ -31,8 +31,24 @@ const makePaymentIntoDB = async (userId: string, orders: string[]) => {
   }
 
   // check all orders exists and calculate payable amount
-  const ordersWithTotalAmountAndProducts = await Order.aggregate([
+  const ordersWithTotalAmount = await Order.aggregate([
     { $match: { _id: { $in: orders.map((id) => new Types.ObjectId(id)) } } },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'product',
+        foreignField: '_id',
+        as: 'productDetails',
+      },
+    },
+    {
+      $unwind: '$productDetails',
+    },
+    {
+      $match: {
+        $expr: { $gte: ['$productDetails.qty', '$orderQty'] },
+      },
+    },
     {
       $group: {
         _id: null,
@@ -42,7 +58,15 @@ const makePaymentIntoDB = async (userId: string, orders: string[]) => {
     },
   ]);
 
-  const { ordersDetails, totalAmount } = ordersWithTotalAmountAndProducts[0];
+  // check if ordersWithTotalAmount is empty
+  if (!ordersWithTotalAmount.length) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Some order are invalid. Check stock quantity or product exists or order exists',
+    );
+  }
+
+  const { ordersDetails, totalAmount } = ordersWithTotalAmount[0];
 
   const orderInfo = ordersDetails.map((item) => ({
     order: item._id,
@@ -53,7 +77,10 @@ const makePaymentIntoDB = async (userId: string, orders: string[]) => {
 
   // check if some orders missing
   if (ordersDetails.length !== orders.length) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Some order are invalid');
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Some order are invalid. Check stock quantity or product exists or order exists',
+    );
   }
 
   // SSLCommerz payment process

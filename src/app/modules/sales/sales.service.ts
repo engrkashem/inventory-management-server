@@ -27,7 +27,10 @@ const confirmOrderIntoDB = async (salesId: string) => {
   try {
     await session.startTransaction();
 
-    console.log(sales);
+    // Make isConfirmed:true in sales collection into transactionInfo
+    // Make isPaymentOk:true in order
+    // deduct product stock by order qty
+    // add balance by sales amount
 
     await session.commitTransaction();
     await session.endSession();
