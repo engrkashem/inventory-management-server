@@ -62,13 +62,13 @@ Add a Product to your Cart
 - **jsonwebtoken**: To ensure data security.
 - **Vercel**: For live server deployment.
 
-### Project Structure
+### Project Data Flow Diagram
 
-- image need to upload
+![Data Flow Diagram of Inventory Management Project](./resources/images/data_flow.svg)
 
 ### ERD (Entity Relationship Diagram)
 
-![ERD of Inventory Management DB](./resources/images/ERD_Inventory_management.png)
+![ERD of Inventory Management DB](./resources/images/ERD_inventory_management.svg)
 
 ## Contributing
 
