@@ -90,7 +90,7 @@ const blockUser = catchAsyncRequest(async (req, res) => {
   const result = await UserServices.blockUserIntoDB(userId);
 
   const links = {
-    self: `POST: ${userRootUrl}/${result?._id}/block-user`,
+    self: `PATCH: ${userRootUrl}/${result?._id}/block-user`,
   };
 
   // sending response
@@ -103,10 +103,29 @@ const blockUser = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const deleteUser = catchAsyncRequest(async (req, res) => {
+  const { userId } = req.params;
+  const result = await UserServices.deleteUserFromDB(userId);
+
+  const links = {
+    self: `DELETE: ${userRootUrl}/${result?._id}`,
+  };
+
+  // sending response
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: `User with id ${userId} deleted successfully.`,
+    data: result,
+    links,
+  });
+});
+
 export const UserControllers = {
   createUser,
   updateUser,
   getAllUsers,
   getUser,
   blockUser,
+  deleteUser,
 };

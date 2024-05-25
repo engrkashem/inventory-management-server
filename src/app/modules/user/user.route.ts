@@ -39,10 +39,16 @@ router.get(
   UserControllers.getUser,
 );
 
-router.post(
+router.patch(
   '/:userId/block-user',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   UserControllers.blockUser,
+);
+
+router.delete(
+  '/:userId',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  UserControllers.deleteUser,
 );
 
 export const UserRoutes = router;

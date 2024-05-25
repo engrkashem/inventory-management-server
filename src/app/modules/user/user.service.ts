@@ -106,19 +106,19 @@ const blockUserIntoDB = async (userId: string) => {
 };
 
 const deleteUserFromDB = async (userId: string) => {
-  const user = await User.findById(userId);
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { isDeleted: true },
+    { new: true, runValidators: true },
+  );
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
   }
 
-  user.isDeleted = true;
-
-  user.save();
-
   return {
-    deletedCount: 0,
-    modifiedCount: 1,
+    deletedCount: 1,
+    modifiedCount: 0,
   };
 };
 
