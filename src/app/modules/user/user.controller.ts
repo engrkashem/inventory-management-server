@@ -60,8 +60,26 @@ const getAllUsers = catchAsyncRequest(async (req, res) => {
   sendResponse(res, {
     status: 201,
     success: true,
-    message: 'User profile updated successfully.',
+    message: 'All users retrieved successfully.',
     data,
+    links,
+  });
+});
+
+const getUser = catchAsyncRequest(async (req, res) => {
+  const { userId } = req.params;
+  const result = await UserServices.getUserFromDB(userId);
+
+  const links = {
+    self: `GET: ${userRootUrl}/${result?._id}`,
+  };
+
+  // sending response
+  sendResponse(res, {
+    status: 201,
+    success: true,
+    message: 'User data retrieved successfully.',
+    data: result,
     links,
   });
 });
@@ -70,4 +88,5 @@ export const UserControllers = {
   createUser,
   updateUser,
   getAllUsers,
+  getUser,
 };

@@ -33,4 +33,10 @@ router.get(
   UserControllers.getAllUsers,
 );
 
+router.get(
+  '/:userId',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  UserControllers.getUser,
+);
+
 export const UserRoutes = router;
