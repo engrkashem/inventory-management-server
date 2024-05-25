@@ -58,7 +58,9 @@ const updateDeliveryStatus = catchAsyncRequest(async (req, res) => {
 
   const result = await OrderServices.updateDeliveryStatusIntoDB(orderId);
 
-  const links = {};
+  const links = {
+    self: `PATCH: ${orderRootUrl}/${result?._id}/update-delivery-status`,
+  };
 
   sendResponse(res, {
     status: httpStatus.OK,

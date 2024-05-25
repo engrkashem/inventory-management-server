@@ -17,3 +17,10 @@ export const USER_ROLE = {
   superAdmin: 'superAdmin',
   employee: 'employee',
 } as const;
+
+export const userSearchableFields = [
+  'name.firstName',
+  'name.middleName',
+  'name.lastName',
+  'email',
+];

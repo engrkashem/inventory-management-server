@@ -1,5 +1,7 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
+import QueryBuilder from '../../queryBuilder/QueryBuilder';
+import { userSearchableFields } from './user.constants';
 import { TUser } from './user.interface';
 import { User } from './user.model';
 
@@ -59,7 +61,93 @@ const updateUserIntoDB = async (userId: string, payload: Partial<TUser>) => {
   return result;
 };
 
+const getAllUsersFromDB = async (query: Record<string, unknown>) => {
+  const userQuery = new QueryBuilder<TUser>(User.find(), query)
+    .search(userSearchableFields)
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await userQuery.modelQuery;
+  const pagination = await userQuery.countTotal();
+
+  return {
+    pagination,
+    data: result,
+  };
+};
+
+const getUserFromDB = async (userId: string) => {
+  const result = await User.findById(userId);
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+
+  return result;
+};
+
+const blockUserIntoDB = async (userId: string) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+
+  user.isBlocked = true;
+
+  user.save();
+
+  return {
+    deletedCount: 0,
+    modifiedCount: 1,
+  };
+};
+
+const deleteUserFromDB = async (userId: string) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+
+  user.isDeleted = true;
+
+  user.save();
+
+  return {
+    deletedCount: 0,
+    modifiedCount: 1,
+  };
+};
+
+const assignUserRoleIntoDB = async (
+  userId: string,
+  payload: { role: string },
+) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+
+  user.role = payload.role;
+
+  user.save();
+
+  return {
+    deletedCount: 0,
+    modifiedCount: 1,
+  };
+};
+
 export const UserServices = {
   createUserIntoDB,
   updateUserIntoDB,
+  getAllUsersFromDB,
+  getUserFromDB,
+  blockUserIntoDB,
+  deleteUserFromDB,
+  assignUserRoleIntoDB,
 };

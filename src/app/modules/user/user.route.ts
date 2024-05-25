@@ -27,4 +27,10 @@ router.patch(
   UserControllers.updateUser,
 );
 
+router.get(
+  '/',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  UserControllers.getAllUsers,
+);
+
 export const UserRoutes = router;

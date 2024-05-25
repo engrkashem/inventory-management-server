@@ -41,7 +41,33 @@ const updateUser = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const getAllUsers = catchAsyncRequest(async (req, res) => {
+  const { pagination, data } = await UserServices.getAllUsersFromDB(req.query);
+
+  const links = {
+    self: `GET: ${userRootUrl}?page=${pagination?.page}&limit=${pagination?.limit}`,
+    prevPage:
+      pagination?.page <= 1
+        ? null
+        : `GET: ${userRootUrl}?page=${pagination?.page - 1}&limit=${pagination?.limit}`,
+    nextPage:
+      pagination?.page >= pagination?.totalPage
+        ? null
+        : `GET: ${userRootUrl}?page=${pagination?.page + 1}&limit=${pagination?.limit}`,
+  };
+
+  // sending response
+  sendResponse(res, {
+    status: 201,
+    success: true,
+    message: 'User profile updated successfully.',
+    data,
+    links,
+  });
+});
+
 export const UserControllers = {
   createUser,
   updateUser,
+  getAllUsers,
 };
