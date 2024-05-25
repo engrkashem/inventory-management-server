@@ -1,3 +1,4 @@
+import httpStatus from 'http-status';
 import config from '../../config';
 import catchAsyncRequest from '../../utils/catchAsyncRequest';
 import sendResponse from '../../utils/sendResponse';
@@ -33,7 +34,7 @@ const updateUser = catchAsyncRequest(async (req, res) => {
 
   // sending response
   sendResponse(res, {
-    status: 201,
+    status: httpStatus.OK,
     success: true,
     message: 'User profile updated successfully.',
     data: result,
@@ -58,7 +59,7 @@ const getAllUsers = catchAsyncRequest(async (req, res) => {
 
   // sending response
   sendResponse(res, {
-    status: 201,
+    status: httpStatus.OK,
     success: true,
     message: 'All users retrieved successfully.',
     data,
@@ -76,9 +77,27 @@ const getUser = catchAsyncRequest(async (req, res) => {
 
   // sending response
   sendResponse(res, {
-    status: 201,
+    status: httpStatus.OK,
     success: true,
     message: 'User data retrieved successfully.',
+    data: result,
+    links,
+  });
+});
+
+const blockUser = catchAsyncRequest(async (req, res) => {
+  const { userId } = req.params;
+  const result = await UserServices.blockUserIntoDB(userId);
+
+  const links = {
+    self: `POST: ${userRootUrl}/${result?._id}/block-user`,
+  };
+
+  // sending response
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: `User with id ${userId} blocked successfully.`,
     data: result,
     links,
   });
@@ -89,4 +108,5 @@ export const UserControllers = {
   updateUser,
   getAllUsers,
   getUser,
+  blockUser,
 };

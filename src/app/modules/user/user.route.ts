@@ -39,4 +39,10 @@ router.get(
   UserControllers.getUser,
 );
 
+router.post(
+  '/:userId/block-user',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  UserControllers.blockUser,
+);
+
 export const UserRoutes = router;

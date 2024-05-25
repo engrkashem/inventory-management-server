@@ -89,15 +89,15 @@ const getUserFromDB = async (userId: string) => {
 };
 
 const blockUserIntoDB = async (userId: string) => {
-  const user = await User.findById(userId);
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { isBlocked: true },
+    { new: true, runValidators: true },
+  );
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
   }
-
-  user.isBlocked = true;
-
-  user.save();
 
   return {
     deletedCount: 0,
