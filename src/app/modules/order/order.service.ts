@@ -1,21 +1,22 @@
 import httpStatus from 'http-status';
+import { Types } from 'mongoose';
 import AppError from '../../errors/AppError';
 import QueryBuilder from '../../queryBuilder/QueryBuilder';
 import { Product } from '../product/product.model';
 import { User } from '../user/user.model';
-import { TOrder } from './order.interface';
+import { TAddToCartIntoDBPayload, TOrder } from './order.interface';
 import { Order } from './order.model';
 
-const addToCartIntoDB = async (userId: string, payload: Partial<TOrder>) => {
+const addToCartIntoDB = async (
+  userId: string,
+  payload: TAddToCartIntoDBPayload,
+) => {
   // check if user exists
   const user = await User.isUserExists(userId);
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user/buyer is not found');
   }
-
-  // update buyer
-  payload.buyer = user._id;
 
   // check if product exists
   const product = await Product.isProductExists(payload.product);
@@ -43,10 +44,18 @@ const addToCartIntoDB = async (userId: string, payload: Partial<TOrder>) => {
   const netAmount = orderAmount - Number(payload.discount || 0);
 
   // set orderAmount and netAmount
-  payload.orderAmount = orderAmount;
-  payload.netAmount = netAmount;
+  const addToCartData: Partial<TOrder> = {
+    product: new Types.ObjectId(payload.product),
+    orderQty: payload.orderQty,
+    discount: payload.discount ? payload.discount : 0,
+    orderAmount,
+    netAmount,
+  };
 
-  const result = await Order.create(payload);
+  // update buyer
+  addToCartData.buyer = new Types.ObjectId(user._id);
+
+  const result = await Order.create(addToCartData);
 
   return result;
 };

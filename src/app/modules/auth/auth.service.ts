@@ -28,7 +28,12 @@ const loginIntoDB = async (payload: TLogin) => {
       throw new AppError(httpStatus.UNAUTHORIZED, 'Password is required');
     }
     // check if user provided password matches with saved hashed password
-    if (!(await User.isPasswordMatched(password, user?.password))) {
+    if (
+      !(await User.isPasswordMatched(
+        password as string,
+        user?.password as string,
+      ))
+    ) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'Wrong password');
     }
   }
@@ -36,7 +41,7 @@ const loginIntoDB = async (payload: TLogin) => {
   // now generate tokens for this user
   const jwtPayload: TJwtPayload = {
     email: user?.email,
-    _id: user?._id,
+    _id: user?._id as string,
     role: user?.role,
   };
 
@@ -80,7 +85,7 @@ const createTokenFromRefreshToken = async (token: string) => {
   // Now generate new access Token
   const jwtPayload: TJwtPayload = {
     email: user?.email,
-    _id: user?._id,
+    _id: user?._id as string,
     role: user?.role,
   };
 
@@ -110,7 +115,12 @@ const changePasswordIntoDB = async (
   verifyUser(user);
 
   // check if old password and hashed password matched
-  if (!(await User.isPasswordMatched(payload?.oldPassword, user?.password))) {
+  if (
+    !(await User.isPasswordMatched(
+      payload?.oldPassword,
+      user?.password as string,
+    ))
+  ) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Incorrect password');
   }
 
@@ -149,13 +159,13 @@ const forgotPasswordDB = async (email: string) => {
   // generate access Token
   const jwtPayload: TJwtPayload = {
     email: user?.email,
-    _id: user?._id,
+    _id: user?._id as string,
     role: user?.role,
   };
   const accessSecret = config.ACCESS_TOKEN_SECRET as string;
   const resetToken = createToken(jwtPayload, accessSecret, '10m');
 
-  const resetUILink = `${config.CLIENT_ROOT_URL}?id=${user?.id}&token=${resetToken}`;
+  const resetUILink = `${config.CLIENT_ROOT_URL}?id=${user?._id}&token=${resetToken}`;
 
   const message = `You have a request for changing password. Please click on following link to reset password. It will valid only 10 minutes. ${resetUILink}`;
 

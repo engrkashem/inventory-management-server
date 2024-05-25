@@ -8,7 +8,7 @@ type TPagination = {
 };
 
 type TLinks = {
-  [key: string]: string;
+  [key: string]: string | null;
 };
 
 type TResponse<T> = {

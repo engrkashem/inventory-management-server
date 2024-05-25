@@ -99,10 +99,7 @@ const blockUserIntoDB = async (userId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
   }
 
-  return {
-    deletedCount: 0,
-    modifiedCount: 1,
-  };
+  return user;
 };
 
 const deleteUserFromDB = async (userId: string) => {

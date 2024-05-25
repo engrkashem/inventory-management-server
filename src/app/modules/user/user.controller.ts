@@ -108,7 +108,7 @@ const deleteUser = catchAsyncRequest(async (req, res) => {
   const result = await UserServices.deleteUserFromDB(userId);
 
   const links = {
-    self: `DELETE: ${userRootUrl}/${result?._id}`,
+    self: `DELETE: ${userRootUrl}/${userId}`,
   };
 
   // sending response

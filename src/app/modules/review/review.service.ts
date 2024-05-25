@@ -1,11 +1,12 @@
 import httpStatus from 'http-status';
+import { Types } from 'mongoose';
 import AppError from '../../errors/AppError';
 import { Product } from '../product/product.model';
 import { TReview } from './review.interface';
 import { Review } from './review.model';
 
 const addReviewIntoDB = async (payload: TReview, userId: string) => {
-  payload.user = userId;
+  payload.user = new Types.ObjectId(userId);
   const result = await Review.create(payload);
 
   return result;
@@ -19,7 +20,7 @@ const getSingleProductReviewsFromDB = async (
   const product = await Product.findById(productId);
 
   if (!product) {
-    throw new AppError(httpStatus.NOT_FOUND.toFixed, 'Product is not found.');
+    throw new AppError(httpStatus.NOT_FOUND, 'Product is not found.');
   }
 
   // pagination setup

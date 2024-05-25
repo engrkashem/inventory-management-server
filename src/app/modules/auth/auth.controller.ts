@@ -43,7 +43,6 @@ const refreshToken = catchAsyncRequest(async (req, res) => {
     success: true,
     message: 'Access Token retrieved successfully.',
     data: result,
-    pagination: {},
     links: {
       self: `POST: ${config.BASE_URL}/auth/refresh-token`,
     },
@@ -58,7 +57,6 @@ const changePassword = catchAsyncRequest(async (req, res) => {
     success: true,
     message: 'Password Changed successfully.',
     data: result,
-    pagination: {},
     links: {
       self: `POST: ${config.BASE_URL}/auth/change-password`,
     },
@@ -79,7 +77,6 @@ const forgotPassword = catchAsyncRequest(async (req, res) => {
     success: true,
     message: 'Password reset link is generated successfully',
     data: result,
-    pagination: {},
     links,
   });
 });
@@ -98,7 +95,6 @@ const resetPassword = catchAsyncRequest(async (req, res) => {
     status: httpStatus.OK,
     message: 'Password reset is successful',
     data: result,
-    pagination: {},
     links,
   });
 });

@@ -2,6 +2,7 @@
 import { Model } from 'mongoose';
 
 export type TProduct = {
+  _id: string;
   name: string;
   category: string;
   qty: number;

@@ -22,7 +22,6 @@ const addToCart = catchAsyncRequest(async (req, res) => {
     success: true,
     message: 'This product is added to your cart',
     data: result,
-    pagination: {},
     links,
   });
 });
@@ -48,7 +47,6 @@ const updateProductQty = catchAsyncRequest(async (req, res) => {
     success: true,
     message: 'Order quantity is updated successfully',
     data: result,
-    pagination: {},
     links,
   });
 });

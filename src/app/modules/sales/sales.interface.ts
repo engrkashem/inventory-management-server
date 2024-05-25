@@ -14,6 +14,7 @@ export type TOrderInfo = {
 };
 
 export type TSales = {
+  _id: string;
   buyer: Types.ObjectId;
   orderInfo: TOrderInfo[];
   amount: number;
@@ -25,5 +26,6 @@ export interface SalesModel extends Model<TSales> {
 }
 
 export type TBalance = {
+  _id: string;
   balance: number;
 };

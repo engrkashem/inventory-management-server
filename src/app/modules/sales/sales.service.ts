@@ -90,13 +90,12 @@ const confirmOrderIntoDB = async (salesId: string) => {
     // add balance by sales amount
     const isBalanceExists = await Balance.find();
 
-    let balance = 0;
     if (isBalanceExists.length === 0) {
-      balance = await Balance.create({ balance: sales.amount });
+      await Balance.create({ balance: Number(sales.amount) });
     } else {
       const balanceId = isBalanceExists[0]._id;
       const prevBalance = isBalanceExists[0].balance;
-      balance = await Balance.findByIdAndUpdate(
+      await Balance.findByIdAndUpdate(
         balanceId,
         {
           balance: prevBalance + sales.amount,
@@ -104,7 +103,7 @@ const confirmOrderIntoDB = async (salesId: string) => {
         { new: true, runValidators: true, session },
       );
     }
-    return balance.balance;
+    return updatedSales;
 
     await session.commitTransaction();
     await session.endSession();

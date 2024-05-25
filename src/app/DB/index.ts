@@ -21,6 +21,9 @@ const superAdminUser: TUser = {
   profilePic:
     'https://res.cloudinary.com/djn7wzals/image/upload/v1703391348/samples/animals/kitten-playing.gif',
   role: USER_ROLE.superAdmin,
+  isDeleted: false,
+  isGoogleAuthenticated: false,
+  isBlocked: false,
 };
 
 const seedSuperAdmin = async () => {

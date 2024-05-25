@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { Schema, model } from 'mongoose';
 import config from '../../config';
 import { GENDER, ROLE } from './user.constants';
-import { TUser, TUserName, UserModel } from './user.interface';
+import { TAddress, TUser, TUserName, UserModel } from './user.interface';
 
 const userNameSchema = new Schema<TUserName>(
   {
@@ -28,7 +28,7 @@ const userNameSchema = new Schema<TUserName>(
   },
 );
 
-const addressSchema = new Schema<TUserName>(
+const addressSchema = new Schema<TAddress>(
   {
     street: { type: String, require: [true, 'Street is required'], trim: true },
     district: {
@@ -61,7 +61,7 @@ const userSchema = new Schema<TUser, UserModel>(
       trim: true,
       unique: true,
     },
-    password: { type: String, default: '', select: false },
+    password: { type: String, select: false },
     gender: {
       type: String,
       enum: {
@@ -103,11 +103,13 @@ userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
 
-  // hash the password before passing to next
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.BCRYPT_SALT_ROUNDS),
-  );
+  if (user.password) {
+    // hash the password before passing to next
+    user.password = await bcrypt.hash(
+      user.password as string,
+      Number(config.BCRYPT_SALT_ROUNDS),
+    );
+  }
 
   next();
 });

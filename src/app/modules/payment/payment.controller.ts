@@ -19,7 +19,6 @@ const makePayment = catchAsyncRequest(async (req, res) => {
     success: true,
     message: 'gateway link is sent successfully',
     data: result,
-    pagination: {},
     links,
   });
 });

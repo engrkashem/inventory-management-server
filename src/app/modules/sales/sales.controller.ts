@@ -19,7 +19,6 @@ const confirmOrder = catchAsyncRequest(async (req, res) => {
     success: true,
     message: 'Payment is successful and Order is confirmed',
     data: result,
-    pagination: {},
     links,
   });
 });

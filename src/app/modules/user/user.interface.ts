@@ -20,6 +20,7 @@ export type TAddress = {
 export type TRole = keyof typeof USER_ROLE;
 
 export type TUser = {
+  _id?: string;
   name?: TUserName;
   email: string;
   password?: string;

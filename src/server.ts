@@ -9,7 +9,7 @@ let server: Server;
 
 const main = async () => {
   try {
-    await mongoose.connect(config.DB_URL);
+    await mongoose.connect(config.DB_URL as string);
 
     // seed super admin
     seedSuperAdmin();
