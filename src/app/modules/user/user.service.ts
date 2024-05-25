@@ -126,20 +126,16 @@ const assignUserRoleIntoDB = async (
   userId: string,
   payload: { role: string },
 ) => {
-  const user = await User.findById(userId);
+  const user = await User.findByIdAndUpdate(userId, payload, {
+    new: true,
+    runValidators: true,
+  });
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
   }
 
-  user.role = payload.role;
-
-  user.save();
-
-  return {
-    deletedCount: 0,
-    modifiedCount: 1,
-  };
+  return user;
 };
 
 export const UserServices = {

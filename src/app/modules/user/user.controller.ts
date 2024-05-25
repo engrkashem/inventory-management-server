@@ -121,6 +121,25 @@ const deleteUser = catchAsyncRequest(async (req, res) => {
   });
 });
 
+const assignUserRole = catchAsyncRequest(async (req, res) => {
+  const { userId } = req.params;
+  const result = await UserServices.assignUserRoleIntoDB(userId, req.body);
+
+  const links = {
+    self: `PATCH: ${userRootUrl}/${result?._id}/assign-user-role`,
+    user: `GET: ${userRootUrl}/${result?._id}`,
+  };
+
+  // sending response
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: `User with id ${userId} made ${req.body.role} successfully.`,
+    data: result,
+    links,
+  });
+});
+
 export const UserControllers = {
   createUser,
   updateUser,
@@ -128,4 +147,5 @@ export const UserControllers = {
   getUser,
   blockUser,
   deleteUser,
+  assignUserRole,
 };

@@ -71,7 +71,14 @@ const updateUserValidationSchema = z.object({
   }),
 });
 
+const assignUserRoleValidationSchema = z.object({
+  body: z.object({
+    role: z.enum([...ROLE] as [string, ...string[]]),
+  }),
+});
+
 export const UserValidations = {
   createUserValidationSchema,
   updateUserValidationSchema,
+  assignUserRoleValidationSchema,
 };

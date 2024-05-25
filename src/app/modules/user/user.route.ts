@@ -51,4 +51,11 @@ router.delete(
   UserControllers.deleteUser,
 );
 
+router.patch(
+  '/:userId/assign-user-role',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  validateRequest(UserValidations.assignUserRoleValidationSchema),
+  UserControllers.assignUserRole,
+);
+
 export const UserRoutes = router;
