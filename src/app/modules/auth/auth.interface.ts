@@ -1,6 +1,6 @@
 export type TLogin = {
   email: string;
-  password: string;
+  password?: string;
 };
 
 export type TJwtPayload = {

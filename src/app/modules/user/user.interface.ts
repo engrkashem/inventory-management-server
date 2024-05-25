@@ -26,7 +26,7 @@ export type TUser = {
   gender?: TGender;
   address?: TAddress;
   contactNo?: string;
-  profilePic?: string;
+  profilePic: string;
   role: TRole;
   isDeleted: boolean;
   isGoogleAuthenticated: boolean;
