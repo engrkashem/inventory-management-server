@@ -3,7 +3,6 @@ import { Types } from 'mongoose';
 import AppError from '../../errors/AppError';
 import { TOrder } from '../order/order.interface';
 import { Order } from '../order/order.model';
-import { TOrderInfo } from '../sales/sales.interface';
 import { Sales } from '../sales/sales.model';
 import { User } from '../user/user.model';
 import { getUniqueId, initializeSSLCommerzPayment } from './payment.utils';
@@ -70,14 +69,12 @@ const makePaymentIntoDB = async (userId: string, orders: string[]) => {
 
   const { ordersDetails, totalAmount } = ordersWithTotalAmount[0];
 
-  const orderInfo: TOrderInfo = (ordersDetails as TOrder[]).map(
-    (item: TOrder) => ({
-      order: item._id,
-      product: item.product,
-      qty: item.orderQty,
-      price: item.netAmount,
-    }),
-  );
+  const orderInfo = ordersDetails.map((item: TOrder) => ({
+    order: item._id,
+    product: item.product,
+    qty: item.orderQty,
+    price: item.netAmount,
+  }));
 
   // check if some orders missing
   if (ordersDetails.length !== orders.length) {
