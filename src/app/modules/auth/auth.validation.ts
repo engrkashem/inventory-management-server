@@ -9,7 +9,7 @@ const loginValidationSchema = z.object({
         message: `${value} is not a valid email. Please enter a correct email`,
       }),
     ),
-    password: z.string({ required_error: 'Password is required' }),
+    password: z.string({ required_error: 'Password is required' }).optional(),
   }),
 });
 

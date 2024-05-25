@@ -23,6 +23,10 @@ const loginIntoDB = async (payload: TLogin) => {
 
   //check if user authenticated by GOOGLE
   if (!user?.isGoogleAuthenticated) {
+    // if user password given
+    if (!password) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Password is required');
+    }
     // check if user provided password matches with saved hashed password
     if (!(await User.isPasswordMatched(password, user?.password))) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'Wrong password');
