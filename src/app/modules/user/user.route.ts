@@ -53,7 +53,7 @@ router.delete(
 
 router.patch(
   '/:userId/assign-user-role',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  auth(USER_ROLE.superAdmin),
   validateRequest(UserValidations.assignUserRoleValidationSchema),
   UserControllers.assignUserRole,
 );

@@ -53,14 +53,25 @@ Add a Product to your Cart
 
 ### Technologies/Frameworks Used
 
-- **Node.Js**: Server environment.
-- **TypeScript**: Scripting language.
-- **Express**: Framework to connect Node.js with MongoDB.
-- **Mongoose**: Framework for data sanity to with MongoDB.
-- **SSLCommerz**: Payment method.
-- **ZOD**: To Validate request.
-- **jsonwebtoken**: To ensure data security.
-- **Vercel**: For live server deployment.
+- **Node.js**: Runtime environment.
+
+- **TypeScript**: Ensures type safety and improved code quality throughout the project.
+
+- **Express**: Utilizes Express.js to build a robust and scalable RESTful API.
+
+- **Mongoose**: Object Data Modeling (ODM) library for MongoDB and Node.js, ensuring data sanity.
+
+- **MongoDB**: Database used to store and manage data efficiently, supporting high scalability and flexibility.
+
+- **SSLCommerz**: Payment gateway integration for secure transactions.
+
+- **ZOD**: Schema declaration and validation library ensuring data integrity and correctness.
+
+- **jsonwebtoken**: Library to ensure data security through JWT (JSON Web Tokens).
+
+- **Vercel**: Platform for deploying and hosting your live server.
+
+- **Jest**: Testing framework used for unit and integration testing to ensure the reliability of the API.
 
 ### Project Data Flow Diagram
 
@@ -69,6 +80,41 @@ Add a Product to your Cart
 ### ERD (Entity Relationship Diagram)
 
 ![ERD of Inventory Management DB](./resources/images/ERD_inventory_management.svg)
+
+### Key Features
+
+- **Modular Architecture**: Follows a modular architecture with clear separation of concerns:
+
+  - **Routes**: Define the endpoints and their corresponding handlers.
+  - **Controllers**: Handle the business logic for each route.
+  - **Services**: Contain the core logic and interactions with the database.
+  - **Models**: Define the data schema and interact with MongoDB.
+
+- **Admin Dashboard**: Offers admin functionalities to manage users, products, and orders efficiently.
+
+- **Order Tracking**: Allows users to track the status of their orders from placement to delivery.
+
+- **Order Management**: It includes Cart management, order confirmation and order fulfillment.
+
+- **Payment**: Integrated with SSLCommerz payment gateway to handle secure and reliable online transactions.
+
+- **Product Reviews**: Users can provide reviews for products they have purchased, enabling feedback and rating within the system.
+
+- **Authentication**: Self designed and Google authentication Integrated.
+
+- **User Registration and Management**: Provides endpoints for user registration, profile updates, and account management.
+
+- **Role-Based Access Control**: The application supports multiple user roles including SuperAdmin, Admin, Manager, Employee, and User.
+
+- **Authentication Middleware**: Protects routes with role-based access control to ensure secure access to resources.
+
+- **Validation Middleware**: Validates incoming requests to maintain data consistency and integrity.
+
+- **API Testing**:
+
+  - **Setup and Configuration**: Jest is used for unit and integration testing, ensuring the reliability of the API.
+  - **Test Structure**: Organized tests by module (e.g., auth, order, product, review) to maintain a clean and scalable test suite.
+  - **Running Tests**: Easily run all tests with npm test, ensuring that new changes do not break existing functionality.
 
 ## Contributing
 
