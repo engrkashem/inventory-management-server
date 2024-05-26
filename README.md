@@ -33,7 +33,7 @@ Make sure you have the following installed on your system:
 
 ## API Endpoints
 
-[Click Here to Visit full API documentation](https://inventory-management-server-indol.vercel.app/)
+[Click Here to Visit full API documentation](https://documenter.getpostman.com/view/29978835/2sA3Qqgt7y)
 
 ## Example Requests
 
