@@ -2,7 +2,7 @@
 
 ## Live Server
 
-[Click Here to Visit the Live Server](https://inventory-management-server-indol.vercel.app/)
+<a href="https://inventory-management-server-indol.vercel.app/" target="_blank">Click Here to Visit the Live Server</a>
 
 ## Getting Started
 
