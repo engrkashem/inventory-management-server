@@ -45,18 +45,10 @@ class QueryBuilder<T> {
     excludeFieldsFromQuery.forEach((item) => delete queryObj[item]);
 
     // Handle price range filtering
-    const priceQuery: Record<string, unknown> = {};
+    this.handlePriceFiltering(queryObj);
 
-    if (this.query?.minPrice) {
-      priceQuery.$gte = Number(this.query.minPrice);
-    }
-    if (this.query?.maxPrice) {
-      priceQuery.$lte = Number(this.query.maxPrice);
-    }
-
-    if (Object.keys(priceQuery).length > 0) {
-      queryObj['price'] = priceQuery;
-    }
+    // Handle date range filtering
+    this.handleDateFiltering(queryObj);
 
     // send filter query
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
@@ -109,6 +101,54 @@ class QueryBuilder<T> {
       totalPage,
     };
   }
+
+  // filtering on start and end date implementation
+  handleDateFiltering(queryObj: Record<string, unknown>) {
+    const startDate = this.query?.startDate as string;
+    const endDate = this.query?.endDate as string;
+
+    if (startDate || endDate) {
+      queryObj['createdAt'] = {};
+      if (startDate) {
+        queryObj['createdAt'].$gte = new Date(startDate);
+      }
+      if (endDate) {
+        queryObj['createdAt'].$lte = new Date(endDate);
+      }
+    }
+  }
+
+  // filtering on price based on start and end price implementation
+  handlePriceFiltering(queryObj: Record<string, unknown>) {
+    const minPrice = this.query?.minPrice;
+    const maxPrice = this.query?.maxPrice;
+
+    if (minPrice || maxPrice) {
+      queryObj['price'] = {};
+      if (minPrice) {
+        queryObj['price'].$gte = Number(minPrice);
+      }
+      if (maxPrice) {
+        queryObj['createdAt'].$lte = Number(maxPrice);
+      }
+    }
+  }
 }
 
 export default QueryBuilder;
+
+/**
+ 
+// const priceQuery: Record<string, unknown> = {};
+
+    // if (this.query?.minPrice) {
+    //   priceQuery.$gte = Number(this.query.minPrice);
+    // }
+    // if (this.query?.maxPrice) {
+    //   priceQuery.$lte = Number(this.query.maxPrice);
+    // }
+
+    // if (Object.keys(priceQuery).length > 0) {
+    //   queryObj['price'] = priceQuery;
+    // }
+ */
