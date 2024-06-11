@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FilterQuery, Query } from 'mongoose';
 
 class QueryBuilder<T> {
@@ -103,7 +104,7 @@ class QueryBuilder<T> {
   }
 
   // filtering on start and end date implementation
-  handleDateFiltering(queryObj: Record<string, unknown>) {
+  handleDateFiltering(queryObj: Record<string, any>) {
     const startDate = this.query?.startDate as string;
     const endDate = this.query?.endDate as string;
 
@@ -119,7 +120,7 @@ class QueryBuilder<T> {
   }
 
   // filtering on price based on start and end price implementation
-  handlePriceFiltering(queryObj: Record<string, unknown>) {
+  handlePriceFiltering(queryObj: Record<string, any>) {
     const minPrice = this.query?.minPrice;
     const maxPrice = this.query?.maxPrice;
 
