@@ -32,7 +32,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 main();
 process.on('unhandledRejection', () => {
-    console.log('unhandledRejection is detected. Server is being shutting down..');
+    console.log('unhandledRejection is detected. Server is shutting down..');
     if (server) {
         server.close(() => {
             process.exit(1);
@@ -41,6 +41,6 @@ process.on('unhandledRejection', () => {
     process.exit(1);
 });
 process.on('uncaughtException', () => {
-    console.log('uncaughtException occurred. Server is being shutting down..');
+    console.log('uncaughtException occurred. Server is  shutting down..');
     process.exit(1);
 });

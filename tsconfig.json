@@ -1,11 +1,12 @@
 {
-  "include": ["src/**/*", "tests/**/*"],
+  // "include": ["src/**/*", "tests/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "target": "es2016",
 
     "module": "commonjs",
-    "rootDir": ".",
+    "rootDir": "./src",
     "typeRoots": ["./node_modules/@types", "./declarations"],
     "outDir": "./dist",
     "esModuleInterop": true,
