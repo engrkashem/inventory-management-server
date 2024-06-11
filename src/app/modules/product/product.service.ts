@@ -31,10 +31,14 @@ const getAllProductsFromDB = async (query: Record<string, unknown>) => {
 
   const result = await productQuery.modelQuery;
   const pagination = await productQuery.countTotal();
+  const categories = await Product.distinct('category');
 
   return {
     pagination,
-    data: result,
+    data: {
+      products: result,
+      categories,
+    },
   };
 };
 
