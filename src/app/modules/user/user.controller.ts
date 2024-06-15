@@ -23,10 +23,10 @@ const createUser = catchAsyncRequest(async (req, res) => {
   });
 });
 
-const updateUser = catchAsyncRequest(async (req, res) => {
+const updateMyInfo = catchAsyncRequest(async (req, res) => {
   const { _id: userId } = req.user;
 
-  const result = await UserServices.updateUserIntoDB(userId, req.body);
+  const result = await UserServices.updateMyInfoIntoDB(userId, req.body);
 
   const links = {
     self: `PATCH: ${userRootUrl}`,
@@ -63,6 +63,25 @@ const getAllUsers = catchAsyncRequest(async (req, res) => {
     success: true,
     message: 'All users retrieved successfully.',
     data,
+    links,
+  });
+});
+
+const getMe = catchAsyncRequest(async (req, res) => {
+  const { _id: userId } = req.user;
+  const result = await UserServices.getMeFromDB(userId);
+
+  const links = {
+    self: `GET: ${userRootUrl}/get-me`,
+    updateMyInfo: `PATCH: ${userRootUrl}/update-my-profile`,
+  };
+
+  // sending response
+  sendResponse(res, {
+    status: httpStatus.OK,
+    success: true,
+    message: 'Your data retrieved successfully.',
+    data: result,
     links,
   });
 });
@@ -142,8 +161,9 @@ const assignUserRole = catchAsyncRequest(async (req, res) => {
 
 export const UserControllers = {
   createUser,
-  updateUser,
+  updateMyInfo,
   getAllUsers,
+  getMe,
   getUser,
   blockUser,
   deleteUser,

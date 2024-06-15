@@ -15,7 +15,7 @@ router.post(
 );
 
 router.patch(
-  '/',
+  '/update-my-profile',
   auth(
     USER_ROLE.superAdmin,
     USER_ROLE.admin,
@@ -24,13 +24,25 @@ router.patch(
     USER_ROLE.user,
   ),
   validateRequest(UserValidations.updateUserValidationSchema),
-  UserControllers.updateUser,
+  UserControllers.updateMyInfo,
 );
 
 router.get(
   '/',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   UserControllers.getAllUsers,
+);
+
+router.get(
+  '/get-me',
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.manager,
+    USER_ROLE.employee,
+    USER_ROLE.user,
+  ),
+  UserControllers.getMe,
 );
 
 router.get(

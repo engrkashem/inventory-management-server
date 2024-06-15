@@ -19,7 +19,7 @@ const createUserIntoDB = async (userData: TUser) => {
   return result;
 };
 
-const updateUserIntoDB = async (userId: string, payload: Partial<TUser>) => {
+const updateMyInfoIntoDB = async (userId: string, payload: Partial<TUser>) => {
   //check if user exists
   const user = await User.isUserExists(userId);
 
@@ -76,6 +76,16 @@ const getAllUsersFromDB = async (query: Record<string, unknown>) => {
     pagination,
     data: result,
   };
+};
+
+const getMeFromDB = async (userId: string) => {
+  const result = await User.findById(userId);
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+
+  return result;
 };
 
 const getUserFromDB = async (userId: string) => {
@@ -137,8 +147,9 @@ const assignUserRoleIntoDB = async (
 
 export const UserServices = {
   createUserIntoDB,
-  updateUserIntoDB,
+  updateMyInfoIntoDB,
   getAllUsersFromDB,
+  getMeFromDB,
   getUserFromDB,
   blockUserIntoDB,
   deleteUserFromDB,
