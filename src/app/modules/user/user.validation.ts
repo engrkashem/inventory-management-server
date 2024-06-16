@@ -6,18 +6,28 @@ import {
 import { GENDER, ROLE } from './user.constants';
 
 const nameValidationSchema = z.object({
-  firstName: z.string({ invalid_type_error: 'First name must be string' }),
+  firstName: z
+    .string({ invalid_type_error: 'First name must be string' })
+    .optional(),
   middleName: z
     .string({ invalid_type_error: 'Middle name must be string' })
     .optional(),
-  lastName: z.string({ invalid_type_error: 'Last name must be string' }),
+  lastName: z
+    .string({ invalid_type_error: 'Last name must be string' })
+    .optional(),
 });
 
 const addressValidationSchema = z.object({
-  street: z.string({ invalid_type_error: 'Street must be string' }),
-  district: z.string({ invalid_type_error: 'District must be string' }),
-  division: z.string({ invalid_type_error: 'Division must be string' }),
-  country: z.string({ invalid_type_error: 'Country name must be string' }),
+  street: z.string({ invalid_type_error: 'Street must be string' }).optional(),
+  district: z
+    .string({ invalid_type_error: 'District must be string' })
+    .optional(),
+  division: z
+    .string({ invalid_type_error: 'Division must be string' })
+    .optional(),
+  country: z
+    .string({ invalid_type_error: 'Country name must be string' })
+    .optional(),
 });
 
 const createUserValidationSchema = z.object({
