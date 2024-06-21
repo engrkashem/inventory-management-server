@@ -122,7 +122,11 @@ const getMyOrderCartFromDB = async (
 
   // Get all orders from user cart
   const userCartQuery = new QueryBuilder<TOrder>(
-    Order.find({ buyer: user?._id, isPaymentOk: false, isCancelled: false }),
+    Order.find({
+      buyer: user?._id,
+      isPaymentOk: false,
+      isCancelled: false,
+    }).populate('product'),
     query,
   )
     .search([])
