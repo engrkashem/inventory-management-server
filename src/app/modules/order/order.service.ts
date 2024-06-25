@@ -40,8 +40,10 @@ const addToCartIntoDB = async (
 
   // calculate orderAmount and netAmount
 
-  const orderAmount = Number(payload.orderQty) * Number(product.price);
-  const netAmount = orderAmount - Number(payload.discount || 0);
+  const orderAmount = Math.ceil(
+    Number(payload.orderQty) * Number(product.price),
+  );
+  const netAmount = Math.ceil(orderAmount - Number(payload.discount || 0));
 
   // set orderAmount and netAmount
   const addToCartData: Partial<TOrder> = {
@@ -63,7 +65,7 @@ const addToCartIntoDB = async (
 const updateProductQtyIntoDB = async (
   orderId: string,
   userId: string,
-  payload: { quantity: number },
+  payload: { orderQty: number },
 ) => {
   // check if order exists into cart
   const order = await Order.findOne({
@@ -76,7 +78,33 @@ const updateProductQtyIntoDB = async (
     throw new AppError(httpStatus.NOT_FOUND, 'Order is not found in your cart');
   }
 
-  const result = await Order.findByIdAndUpdate(orderId, payload, {
+  // check if product exists
+  const product = await Product.findById(order.product);
+
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product is not found in store');
+  }
+
+  if (product.qty < payload.orderQty) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `You ordered quantity is unavailable. Only ${product.qty} available in store`,
+    );
+  }
+  const updatedData: {
+    orderQty: number;
+    orderAmount: number;
+    netAmount?: number;
+  } = {
+    ...payload,
+    orderAmount: Math.ceil(payload.orderQty * Number(product.price)),
+  };
+
+  updatedData.netAmount = Math.ceil(
+    updatedData.orderAmount - Number(order?.discount || 0),
+  );
+
+  const result = await Order.findByIdAndUpdate(orderId, updatedData, {
     new: true,
     runValidators: true,
   });
